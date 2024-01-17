@@ -40,9 +40,9 @@ declare -A card_mapping=(
     [8]="8"
     [9]="9"
     [10]="0"
-    [11]="J"
-    [12]="Q"
-    [13]="K"
+    [10]="J"
+    [10]="Q"
+    [10]="K"
 )
 
 # Define the expected format regex
