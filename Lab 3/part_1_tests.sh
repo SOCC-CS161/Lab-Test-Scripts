@@ -30,25 +30,20 @@ fi
  
 # Define the expected mapping
 declare -A card_mapping=(
-    [1]="A"
-    [2]="2"
-    [3]="3"
-    [4]="4"
-    [5]="5"
-    [6]="6"
-    [7]="7"
-    [8]="8"
-    [9]="9"
-    [10]="0"
-    [10]="J"
-    [10]="Q"
-    [10]="K"
+    [A]=11
+    [2]=2
+    [3]=3
+    [4]=4
+    [5]=5
+    [6]=6
+    [7]=7
+    [8]=8
+    [9]=9
+    [0]=10
+    [J]=10
+    [Q]=10
+    [K]=10
 )
-
-# Define the expected format regex
-format_regex='^\s*([A-K0-9]|10)\s+([1-9]|10|11|12|13)\s*$|^\s*([1-9]|10|11|12|13)\s+([A-K0-9]|10)\s*$'
-
-
 
 # Verify the mapping and format
 errors=0
@@ -59,19 +54,12 @@ while IFS= read -r line; do
     number=$(echo "$line" | grep -oP '\d+\s*$')
 
     if [[ -n "$number" && -n "$character" ]]; then
-        if [[ "$character" =~ [JQK] && "$number" -eq 10 ]]; then
-            echo "  ✅ The character \"$character\" is correctly associated with the value \"$number\"."
-        elif [[ "$character" =~ [A1-9] ]]; then
-            expected_value="${card_mapping[$character]}"
-            if [[ "$number" != "$expected_value" ]]; then
-                echo "  ❌ Expected the character \"$character\" to be associated with \"$expected_value\". Found \"$number\" instead."
-                ((errors++))
-            else
-                echo "  ✅ The character \"$character\" appears to be correctly associated with the value \"$number\"."
-            fi
-        else
-            echo "  ❌ The character \"$character\" is not correctly associated with any value."
+        expected_number=${card_mapping[$character]}
+        if [[ "$number" != "$expected_number" ]]; then
+            echo "  ❌ Expected the character \"$character\" to be associated with \"$expected_number\". Found \"$number\" instead."
             ((errors++))
+        else
+            echo "  ✅ The character \"$character\" appears to be correctly associated with the value \"$number\"."
         fi
     else
         echo "  ❌ The line \"$line\" does not match the expected format which is the card and its corresponding value separated by spaces or tabs; one card per line."
@@ -83,10 +71,11 @@ done < output.txt
 if [[ $format_errors -ne 0 ]]; then
     echo "❌ There were $format_errors formatting errors. Check the details above."
 elif [[ $errors -eq 0 ]]; then
-    echo "✅ All numbers are correctly associated with their characters and the format is correct."
+    echo "✅ All characters are correctly associated with their values and the format is correct."
 else
     echo "❌ There were $errors incorrect associations. Check the details above."
 fi
+
 
 # Neatly print the program output
 echo "--------------------------------------------------"
