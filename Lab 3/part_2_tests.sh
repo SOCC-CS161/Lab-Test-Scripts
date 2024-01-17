@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile the blackjack game
-g++ -o blackjack_game main.cpp || { echo "❌ COMPILATION FAILED"; exit 1; }
+g++ -o blackjack_game ./source/main.cpp || { echo "❌ COMPILATION FAILED"; exit 1; }
 
 # Function to play a round of blackjack
 play_blackjack() {
