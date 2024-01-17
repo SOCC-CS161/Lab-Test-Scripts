@@ -43,7 +43,7 @@ declare -A card_mapping=(
 )
 
 # Define the expected format regex
-format_regex='^\s*[A-K0-9]\s*\t\s*([1-9]|10|11|12|13)\s*$'
+format_regex='^\s*[A-K0-9]\s+\d+\s*$'
 
 
 # Verify the mapping and format
