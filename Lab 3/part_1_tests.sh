@@ -46,30 +46,34 @@ declare -A card_mapping=(
 )
 
 # Define the expected format regex
-format_regex='^\s*(A|J|Q|K|0|[2-9])\s+(10|11|[2-9])\s*$'
+format_regex='^\s*(A|J|Q|K|0|[2-9])\s+(10|11|[2-9])(\s*|\t*|\\t*)$'
 
 # Verify the mapping and format
 errors=0
 format_errors=0
 while IFS= read -r line; do
+    # Remove potential carriage returns for Windows-formatted text files
+    line=$(echo "$line" | tr -d '\r')
+
     # Check the format
     if ! [[ $line =~ $format_regex ]]; then
-        echo "  ❌ The line \"$line\" does not match the expected format which is the card and its corresponding value separated by spaces or tabs; one card per line."
+        echo "  ❌ The line \"$line\" does not match the expected format."
         ((format_errors++))
-        continue
-    fi
-
-    # Extract character and number from the line
-    character=$(echo "$line" | grep -oP '^\s*\K(A|J|Q|K|0|[2-9])')
-    number=$(echo "$line" | grep -oP '(10|11|[2-9])\s*$')
-
-    # Check if the extracted values match the expected pattern
-    expected_number=${card_mapping[$character]}
-    if [[ "$number" != "$expected_number" ]]; then
-        echo "  ❌ Expected the character \"$character\" to be associated with \"$expected_number\". Found \"$number\" instead."
-        ((errors++))
     else
-        echo "  ✅ The character \"$character\" appears to be correctly associated with the value \"$number\"."
+        # Extract character and number from the line, ignoring trailing whitespace
+        character=$(echo "$line" | grep -oP '^\s*\K(A|J|Q|K|0|[2-9])')
+        number=$(echo "$line" | grep -oP '(10|11|[2-9])' | tr -d '[:space:]')
+
+        # Get the expected number from the mapping
+        expected_number=${card_mapping[$character]}
+
+        # Check if the extracted number matches the expected number
+        if [[ "$number" -eq "$expected_number" ]]; then
+            echo "  ✅ The character \"$character\" is correctly associated with the value \"$number\"."
+        else
+            echo "  ❌ The character \"$character\" should be associated with the value \"$expected_number\", but found \"$number\"."
+            ((errors++))
+        fi
     fi
 done < output.txt
 
