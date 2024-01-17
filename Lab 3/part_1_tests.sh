@@ -19,6 +19,9 @@ fi
 echo "Running the card_generator..."
 ./card_generator > output.txt
 
+# Normalize line endings to Unix format (remove carriage returns)
+sed -i 's/\r$//' output.txt
+
 # Check if output is empty
 if [ ! -s output.txt ]; then
     echo "❌ The output is empty. The program did not print anything."
@@ -43,7 +46,7 @@ declare -A card_mapping=(
 )
 
 # Define the expected format regex
-format_regex='^\s*[A-K0-9]\s+\d+\s*$'
+format_regex='^\s*[A-K0-9]\s+[0-9]+\s*$'
 
 
 # Verify the mapping and format
