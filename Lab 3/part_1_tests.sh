@@ -54,25 +54,28 @@ format_regex='^\s*([A-K0-9]|10)\s+([1-9]|10|11|12|13)\s*$|^\s*([1-9]|10|11|12|13
 errors=0
 format_errors=0
 while IFS= read -r line; do
-    # Check the format
-    if ! [[ $line =~ $format_regex ]]; then
-        echo "  ❌ The line \"$line\" does not match the expected format which is the card and it's corresponding value separated by spaces or tabs; one card per line."
-        ((format_errors++))
-        continue
-    fi
-
-    # Extract number and character from the line
-    number=$(echo "$line" | grep -oP '^\d+')
-    character=$(echo "$line" | grep -oP '[A-K0-9]$')
+    # Extract character and number from the line
+    character=$(echo "$line" | grep -oP '^\s*\K[A-K0-9]')
+    number=$(echo "$line" | grep -oP '\d+\s*$')
 
     if [[ -n "$number" && -n "$character" ]]; then
-        expected_character="${card_mapping[$number]}"
-        if [[ "$character" != "$expected_character" ]]; then
-            echo "  ❌ Expected \"$number\" to be associated with \"$expected_character\". Found \"$character\" instead."
-            ((errors++))
+        if [[ "$character" =~ [JQK] && "$number" -eq 10 ]]; then
+            echo "  ✅ The character \"$character\" is correctly associated with the value \"$number\"."
+        elif [[ "$character" =~ [A1-9] ]]; then
+            expected_value="${card_mapping[$character]}"
+            if [[ "$number" != "$expected_value" ]]; then
+                echo "  ❌ Expected the character \"$character\" to be associated with \"$expected_value\". Found \"$number\" instead."
+                ((errors++))
+            else
+                echo "  ✅ The character \"$character\" appears to be correctly associated with the value \"$number\"."
+            fi
         else
-            echo "  ✅ The number \"$number\" appears to be correctly associated with the character \"$character\"."
+            echo "  ❌ The character \"$character\" is not correctly associated with any value."
+            ((errors++))
         fi
+    else
+        echo "  ❌ The line \"$line\" does not match the expected format which is the card and its corresponding value separated by spaces or tabs; one card per line."
+        ((format_errors++))
     fi
 done < output.txt
 
