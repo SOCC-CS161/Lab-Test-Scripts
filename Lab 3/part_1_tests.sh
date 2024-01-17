@@ -84,3 +84,12 @@ elif [[ $errors -eq 0 ]]; then
 else
     echo "❌ There were $errors incorrect associations. Check the details above."
 fi
+
+# Neatly print the program output
+echo "--------------------------------------------------"
+echo "Program Output:"
+echo "--------------------------------------------------"
+cat output.txt
+echo "--------------------------------------------------"
+echo "End of Program Output"
+echo "--------------------------------------------------"
