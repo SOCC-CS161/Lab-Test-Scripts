@@ -43,7 +43,8 @@ declare -A card_mapping=(
 )
 
 # Define the expected format regex
-format_regex='^([1-9]|10|11|12|13)[\s\-\t]+[A-K0-9]$'
+format_regex='^\s*[A-K0-9]\s*\t\s*([1-9]|10|11|12|13)\s*$'
+
 
 # Verify the mapping and format
 errors=0
@@ -51,7 +52,7 @@ format_errors=0
 while IFS= read -r line; do
     # Check the format
     if ! [[ $line =~ $format_regex ]]; then
-        echo "  ❌ The line \"$line\" does not match the expected format."
+        echo "  ❌ The line \"$line\" does not match the expected format which is the card and it's corresponding value separated by spaces or tabs; one card per line."
         ((format_errors++))
         continue
     fi
