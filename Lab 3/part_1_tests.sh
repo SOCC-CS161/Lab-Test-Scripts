@@ -45,25 +45,31 @@ declare -A card_mapping=(
     [K]=10
 )
 
+# Define the expected format regex
+format_regex='^\s*(A|J|Q|K|0|[2-9])\s+(10|11|[2-9])\s*$'
+
 # Verify the mapping and format
 errors=0
 format_errors=0
 while IFS= read -r line; do
-    # Extract character and number from the line
-    character=$(echo "$line" | grep -oP '^\s*\K[A-K0-9]')
-    number=$(echo "$line" | grep -oP '\d+\s*$')
-
-    if [[ -n "$number" && -n "$character" ]]; then
-        expected_number=${card_mapping[$character]}
-        if [[ "$number" != "$expected_number" ]]; then
-            echo "  ❌ Expected the character \"$character\" to be associated with \"$expected_number\". Found \"$number\" instead."
-            ((errors++))
-        else
-            echo "  ✅ The character \"$character\" appears to be correctly associated with the value \"$number\"."
-        fi
-    else
+    # Check the format
+    if ! [[ $line =~ $format_regex ]]; then
         echo "  ❌ The line \"$line\" does not match the expected format which is the card and its corresponding value separated by spaces or tabs; one card per line."
         ((format_errors++))
+        continue
+    fi
+
+    # Extract character and number from the line
+    character=$(echo "$line" | grep -oP '^\s*\K(A|J|Q|K|0|[2-9])')
+    number=$(echo "$line" | grep -oP '(10|11|[2-9])\s*$')
+
+    # Check if the extracted values match the expected pattern
+    expected_number=${card_mapping[$character]}
+    if [[ "$number" != "$expected_number" ]]; then
+        echo "  ❌ Expected the character \"$character\" to be associated with \"$expected_number\". Found \"$number\" instead."
+        ((errors++))
+    else
+        echo "  ✅ The character \"$character\" appears to be correctly associated with the value \"$number\"."
     fi
 done < output.txt
 
@@ -75,7 +81,6 @@ elif [[ $errors -eq 0 ]]; then
 else
     echo "❌ There were $errors incorrect associations. Check the details above."
 fi
-
 
 # Neatly print the program output
 echo "--------------------------------------------------"
