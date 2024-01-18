@@ -28,6 +28,12 @@ expected_pennies="2"
 # Run the program with predefined inputs and capture the output
 echo -e "$food_charge\n$gratuity_percent\n$amount_tendered" | ./test_lab_2 > output.txt
 
+echo "Running the program with the following inputs:"
+echo "Food Charge = \$${food_charge}"
+echo "Gratuity = ${gratuity_percent}%"
+echo "Amount Tendered = \$${amount_tendered}"
+echo
+
 # Perform all checks
 echo "--------------------------------------------------"
 echo "Performing checks:"
@@ -40,37 +46,38 @@ check_output() {
     if grep -qE "$pattern" output.txt; then
         echo "✅ PASSED: $success_message."
     else
-        echo "❌ FAILED: $fail_message."
+        echo "❌ FAILED: $fail_message Expected was: '$pattern'."
     fi
 }
 
 # Welcome message check
-check_output "Welcome" "Welcome message found" "Welcome message not found. Ensure the word 'Welcome' is printed."
+check_output "Welcome" "Welcome message found" "Welcome message not found."
 
 # Current Pacific Time check
 current_time=$(TZ="America/Los_Angeles" date +"%H:%M")
-current_time_optional_leading=$(TZ="America/Los_Angeles" date +"%-H:%M")
-timeRegex="($current_time|$current_time_optional_leading)"
-check_output "$timeRegex" "Current Pacific Time found in output" "Current Pacific Time not found in output. Expected was: '$current_time' or '$current_time_optional_leading'."
+# If time is like "22:4", pad with a zero to make it "22:04"
+padded_time=$(echo "$current_time" | sed -r 's/:(\d)\b/:0\1/')
+timeRegex="($current_time|$padded_time)"
+check_output "$timeRegex" "Current Pacific Time found in output" "Current Pacific Time not found in output."
 
 # Correct amounts and change checks
-check_output "$expected_food_charge" "Correct food charge amount found" "Food charge amount not found. Expected was: '$expected_food_charge'."
-check_output "$expected_tax" "Correct tax amount found" "Tax amount not found. Expected was: '$expected_tax'."
-check_output "$expected_gratuity" "Correct gratuity amount found" "Gratuity amount not found. Expected was: '$expected_gratuity'."
-check_output "$expected_total" "Correct total due found" "Total due not found. Expected was: '$expected_total'."
-check_output "$expected_change" "Correct change found" "Change not found. Expected was: '$expected_change'."
+check_output "$expected_food_charge" "Correct food charge amount found" "Food charge amount not found."
+check_output "$expected_tax" "Correct tax amount found" "Tax amount not found."
+check_output "$expected_gratuity" "Correct gratuity amount found" "Gratuity amount not found."
+check_output "$expected_total" "Correct total due found" "Total due not found."
+check_output "$expected_change" "Correct change found" "Change not found."
 
 # Coin and bill count checks
-check_output "${expected_hundreds} hundred-dollar bills" "Correct count for hundred-dollar bills found" "Hundred-dollar bill count not found. Expected was: '$expected_hundreds hundred-dollar bills'."
-check_output "${expected_fifties} fifty-dollar bills" "Correct count for fifty-dollar bills found" "Fifty-dollar bill count not found. Expected was: '$expected_fifties fifty-dollar bills'."
-check_output "${expected_twenties} twenty-dollar bills" "Correct count for twenty-dollar bills found" "Twenty-dollar bill count not found. Expected was: '$expected_twenties twenty-dollar bills'."
-check_output "${expected_tens} ten-dollar bills" "Correct count for ten-dollar bills found" "Ten-dollar bill count not found. Expected was: '$expected_tens ten-dollar bills'."
-check_output "${expected_fives} five-dollar bills" "Correct count for five-dollar bills found" "Five-dollar bill count not found. Expected was: '$expected_fives five-dollar bills'."
-check_output "${expected_ones} dollars" "Correct count for one-dollar bills found" "One-dollar bill count not found. Expected was: '$expected_ones dollars'."
-check_output "${expected_quarters} quarters" "Correct count for quarters found" "Quarter count not found. Expected was: '$expected_quarters quarters'."
-check_output "${expected_dimes} dimes" "Correct count for dimes found" "Dime count not found. Expected was: '$expected_dimes dimes'."
-check_output "${expected_nickels} nickels" "Correct count for nickels found" "Nickel count not found. Expected was: '$expected_nickels nickels'."
-check_output "${expected_pennies} pennies" "Correct count for pennies found" "Penny count not found. Expected was: '$expected_pennies pennies'."
+check_output "${expected_hundreds} hundred-dollar bills" "Correct count for hundred-dollar bills found" "Hundred-dollar bill count not found."
+check_output "${expected_fifties} fifty-dollar bills" "Correct count for fifty-dollar bills found" "Fifty-dollar bill count not found."
+check_output "${expected_twenties} twenty-dollar bills" "Correct count for twenty-dollar bills found" "Twenty-dollar bill count not found."
+check_output "${expected_tens} ten-dollar bills" "Correct count for ten-dollar bills found" "Ten-dollar bill count not found."
+check_output "${expected_fives} five-dollar bills" "Correct count for five-dollar bills found" "Five-dollar bill count not found."
+check_output "${expected_ones} dollars" "Correct count for one-dollar bills found" "One-dollar bill count not found."
+check_output "${expected_quarters} quarters" "Correct count for quarters found" "Quarter count not found."
+check_output "${expected_dimes} dimes" "Correct count for dimes found" "Dime count not found."
+check_output "${expected_nickels} nickels" "Correct count for nickels found" "Nickel count not found."
+check_output "${expected_pennies} pennies" "Correct count for pennies found" "Penny count not found."
 
 # Output results
 echo "--------------------------------------------------"
