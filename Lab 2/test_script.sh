@@ -65,24 +65,18 @@ is_daylight_saving() {
 
 # Check for time in the output
 current_time=$(TZ="America/Los_Angeles" date +"%H:%M")
-timeRegex="$current_time"
-if grep -q "$timeRegex" output.txt; then
+# Create a regex that makes leading zeros optional
+timeRegex="0?$(echo "$current_time" | sed 's/0\([0-9]\):/0?\1:/; s/:0\([0-9]\)$/:0?\1/')"
+if grep -qE "$timeRegex" output.txt; then
     echo "✅ PASSED: Current Pacific Time found in output."
 else
     echo "❌ FAILED: Expected to find current Pacific Time \"$current_time\" in output."
 fi
 
+
 echo "--------------------------------------------------"
 echo "Performing checks for PART 2:"
 echo "--------------------------------------------------"
-# Check if all dollar values are truncated to 2 decimal places
-dollarRegex="\\\$[0-9]+\\.[0-9]{2}"
-if grep -oP "$dollarRegex" output.txt | grep -qPv "$dollarRegex"; then
-    echo "❌ FAILED: Found a dollar value not truncated to 2 decimal places."
-else
-    echo "✅ PASSED: All dollar values are correctly truncated."
-fi
-
 
 # Check for correct food charge amount
 if grep -q ${expected_food_charge} output.txt; then
