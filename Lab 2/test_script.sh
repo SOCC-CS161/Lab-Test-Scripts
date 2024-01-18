@@ -26,7 +26,7 @@ expected_nickels="1"
 expected_pennies="2"
 
 # Run the program with predefined inputs and capture the output
-echo -e "$food_charge\n$gratuity_percent\n$amount_tendered" | ./myprogram > output.txt
+echo -e "$food_charge\n$gratuity_percent\n$amount_tendered" | ./test_lab_2 > output.txt
 
 echo "Running the program with the following inputs:"
 echo "Food Charge = \$${food_charge}"
