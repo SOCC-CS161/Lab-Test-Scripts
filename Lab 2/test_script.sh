@@ -53,9 +53,8 @@ check_output() {
 # Check for welcome message, time, and formatted amounts
 check_output "Welcome" "Welcome message found" "Welcome message not found."
 # Allow time without leading zero
-current_time=$(TZ="America/Los_Angeles" date +"%H:%M")
-current_time_optional_leading=$(TZ="America/Los_Angeles" date +"%-H:%M")
-timeRegex="($current_time|$current_time_optional_leading)"
+current_time=$(TZ="America/Los_Angeles" date +"%H:%M" | sed 's/^0//') # Removes leading zero if present
+timeRegex="($current_time|$(date +"%l:%M" | xargs))" # xargs trims leading whitespace from %l (hour in 12-hour format without leading zeros)
 check_output "$timeRegex" "Current Pacific Time found in output" "Current Pacific Time not found in output."
 
 # Check for correct amounts and change
