@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compile your program
-g++ -o myprogram ./source/main.cpp
+g++ -o test_lab_2 ./source/main.cpp
 
 # Define the test input and expected output
 food_charge="37.45"
@@ -33,129 +33,55 @@ echo "Food Charge = \$${food_charge}"
 echo "Gratuity = ${gratuity_percent}%"
 echo "Amount Tendered = \$${amount_tendered}"
 echo
-echo "--------------------------------------------------"
-echo "Performing checks for PART 1:"
-echo "--------------------------------------------------"
-# Check for welcome message
-if grep -q "Welcome" output.txt; then
-    echo "✅ PASSED: Welcome message found."
-else
-    echo "❌ FAILED: Welcome message not found. Ensure the word \"Welcome\" is printed."
-fi
 
-# Check for time in the output
-# Function to determine if PDT is in effect
-is_daylight_saving() {
-    local month=$(date +%m)
-    local day=$(date +%d)
-    local hour=$(date +%H)
-    
-    # Assuming daylight saving time starts on the second Sunday in March
-    # and ends on the first Sunday in November
-    if [ "$month" -gt 3 ] && [ "$month" -lt 11 ]; then
-        return 0 # True, PDT is in effect
-    elif [ "$month" -eq 3 ] && ([ "$day" -gt 7 ] || ([ "$day" -eq 7 ] && [ "$hour" -ge 2 ])); then
-        return 0 # True, PDT is in effect
-    elif [ "$month" -eq 11 ] && ([ "$day" -lt 7 ] || ([ "$day" -eq 7 ] && [ "$hour" -lt 2 ])); then
-        return 0 # True, PDT is in effect
+# Perform all checks
+echo "--------------------------------------------------"
+echo "Performing checks:"
+echo "--------------------------------------------------"
+
+check_output() {
+    local expected="$1"
+    local message="$2"
+    local fail_message="$3"
+    if grep -q "$expected" output.txt; then
+        echo "✅ PASSED: $message."
     else
-        return 1 # False, PST is in effect
+        echo "❌ FAILED: $fail_message Expected was: '$expected'."
     fi
 }
 
-# Check for time in the output
+# Check for welcome message, time, and formatted amounts
+check_output "Welcome" "Welcome message found" "Welcome message not found."
+# Allow time without leading zero
 current_time=$(TZ="America/Los_Angeles" date +"%H:%M")
-timeRegex="$current_time"
-if grep -q "$timeRegex" output.txt; then
-    echo "✅ PASSED: Current Pacific Time found in output."
-else
-    echo "❌ FAILED: Expected to find current Pacific Time \"$current_time\" in output."
-fi
+current_time_optional_leading=$(TZ="America/Los_Angeles" date +"%-H:%M")
+timeRegex="($current_time|$current_time_optional_leading)"
+check_output "$timeRegex" "Current Pacific Time found in output" "Current Pacific Time not found in output."
 
-echo "--------------------------------------------------"
-echo "Performing checks for PART 2:"
-echo "--------------------------------------------------"
-# Check if all dollar values are truncated to 2 decimal places
-dollarRegex="\\\$[0-9]+\\.[0-9]{2}"
-if grep -oP "$dollarRegex" output.txt | grep -qPv "$dollarRegex"; then
-    echo "❌ FAILED: Found a dollar value not truncated to 2 decimal places."
-else
-    echo "✅ PASSED: All dollar values are correctly truncated."
-fi
+# Check for correct amounts and change
+check_output "$expected_food_charge" "Correct food charge amount found" "Food charge amount not found."
+check_output "$expected_tax" "Correct tax amount found" "Tax amount not found."
+check_output "$expected_gratuity" "Correct gratuity amount found" "Gratuity amount not found."
+check_output "$expected_total" "Correct total due found" "Total due not found."
+check_output "$expected_change" "Correct change found" "Change not found."
+
+# Check for coin and bill counts
+check_output "${expected_hundreds} hundred-dollar bills" "Correct count for hundred-dollar bills found" "Hundred-dollar bill count not found."
+check_output "${expected_fifties} fifty-dollar bills" "Correct count for fifty-dollar bills found" "Fifty-dollar bill count not found."
+check_output "${expected_twenties} twenty-dollar bills" "Correct count for twenty-dollar bills found" "Twenty-dollar bill count not found."
+check_output "${expected_tens} ten-dollar bills" "Correct count for ten-dollar bills found" "Ten-dollar bill count not found."
+check_output "${expected_fives} five-dollar bills" "Correct count for five-dollar bills found" "Five-dollar bill count not found."
+check_output "${expected_ones} dollars" "Correct count for one-dollar bills found" "One-dollar bill count not found."
+check_output "${expected_quarters} quarters" "Correct count for quarters found" "Quarter count not found."
+check_output "${expected_dimes} dimes" "Correct count for dimes found" "Dime count not found."
+check_output "${expected_nickels} nickels" "Correct count for nickels found" "Nickel count not found."
+check_output "${expected_pennies} pennies" "Correct count for pennies found" "Penny count not found."
 
 
-# Check for correct food charge amount
-if grep -q ${expected_food_charge} output.txt; then
-    echo "✅ PASSED: Correct food charge amount found."
-else
-    echo "❌ FAILED: Expected to find \"${expected_food_charge}\" as food charge amount."
-fi
-
-# Check for correct tax amount (6% of 13.45 = 0.807, truncated to 0.80)
-if grep -q ${expected_tax} output.txt; then
-    echo "✅ PASSED: Correct tax amount found."
-else
-    echo "❌ FAILED: Expected to find \"${expected_tax}\" as tax amount."
-fi
-
-# Check for correct gratuity amount (15% of 13.45 = 2.0175, truncated to 2.01)
-if grep -q "${expected_gratuity}" output.txt; then
-    echo "✅ PASSED: Correct gratuity amount found."
-else
-    echo "❌ FAILED: Expected to find \"${expected_gratuity}\" as gratuity amount."
-fi
-
-# Total check
-if grep -q "${expected_total}" output.txt; then
-echo "✅ PASSED: Correct total due found."
-else
-echo "❌ FAILED: Expected to find \"${expected_total}\" printed as total due."
-fi
-
-echo "--------------------------------------------------"
-echo "Performing checks for PART 3:"
-echo "--------------------------------------------------"
-
-# Change
-if grep -q "${expected_change}" output.txt; then
-echo "✅ PASSED: Correct total due found."
-else
-echo "❌ FAILED: Expected to find \"${expected_change}\" printed as total due."
-fi
-
-echo "--------------------------------------------------"
-echo "Performing checks for EXTRA CREDIT:"
-echo "--------------------------------------------------"
-
-# Separate checks for each coin and bill type
-check_bill_or_coin() {
-    expected_count=$1
-    denomination=$2
-    if grep -q "${expected_count} ${denomination}" output.txt; then
-        echo "✅⭐ PASSED: Correct count for ${denomination} found."
-    else
-        echo "❌ FAILED: Expected \"${expected_count} ${denomination}\"."
-    fi
-}
-
-# Perform checks for each type
-check_bill_or_coin "$expected_hundreds" "hundred-dollar bills"
-check_bill_or_coin "$expected_fifties" "fifty-dollar bills"
-check_bill_or_coin "$expected_twenties" "twenty-dollar bills"
-check_bill_or_coin "$expected_tens" "ten-dollar bills"
-check_bill_or_coin "$expected_fives" "five-dollar bills"
-check_bill_or_coin "$expected_ones" "dollars"
-check_bill_or_coin "$expected_quarters" "quarters"
-check_bill_or_coin "$expected_dimes" "dimes"
-check_bill_or_coin "$expected_nickels" "nickels"
-check_bill_or_coin "$expected_pennies" "pennies"
-
-echo
+# Output results
 echo "--------------------------------------------------"
 echo "Program Output:"
-echo "--------------------------------------------------"
 cat output.txt
-echo
 echo "--------------------------------------------------"
 echo "End of Output"
 echo "--------------------------------------------------"
