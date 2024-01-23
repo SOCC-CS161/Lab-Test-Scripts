@@ -9,27 +9,35 @@ play_blackjack() {
     echo "Starting round of blackjack"
     echo "=================================================="
 
-    # Create a named pipe (FIFO) for communication with the game
-    mkfifo game_pipe
-    exec 3<> game_pipe
+    # Start the game and redirect its output to a file
+    ./blackjack_game > output.txt &
 
-    # Start the game with input from the pipe
-    ./blackjack_game <&3 > output.txt &
+    # Get the PID of the game process
+    game_pid=$!
+
+    # Function to make a decision based on the hand value
+    make_decision() {
+        hand_value="$1"
+        if [[ "$hand_value" -lt 17 ]]; then
+            echo "y"  # Choose to hit
+        else
+            echo "n"  # Choose to stand
+        fi
+    }
 
     # Read each line from the game's output
     while IFS= read -r line; do
         echo "$line"  # Echo the game output for logging
 
-        # Check for hand value
+        # Check for the player's hand value
         if [[ "$line" =~ "You've got" ]]; then
             hand_value=$(echo "$line" | grep -oP '\d+')
-            # Standard blackjack strategy: hit if hand value is less than 17
-            decision="n"  # Default to stand
-            if [[ "$hand_value" -lt 17 ]]; then
-                decision="y"  # Choose to hit
-            fi
-            echo "Decision made: $decision"  # Log the decision
-            echo "$decision" >&3  # Send decision to the game
+            decision=$(make_decision "$hand_value")
+            echo "Decision made: $decision"
+            
+            # Send decision to the game
+            kill -SIGUSR1 "$game_pid"
+            echo "$decision" > /proc/"$game_pid"/fd/0
         fi
 
         # Check for game end conditions
@@ -38,10 +46,6 @@ play_blackjack() {
             break
         fi
     done < output.txt
-
-    # Clean up
-    exec 3>&-
-    rm game_pipe
 
     echo "--------------------------------------------------"
     echo "End of Program Output for this round"
