@@ -10,36 +10,78 @@ make_decision() {
     if [[ "$hand_value" -lt 17 ]]; then
         echo "y"  # Choose to hit
     else
-        echo "n"  # Choose to stay
+        echo "n"  # Choose to stand
     fi
 }
 
-# Function to play a round of blackjack
+# Play a round of blackjack and check the output
 play_blackjack() {
     # Start the game
     echo "Starting the game..."
-    ./blackjack_game > game_output.txt
+    # Pass decisions into the game based on the hand value
+    hand_value=0  # Initial hand value
+    ace_count=0  # Initial ace count
+    decision=$(make_decision $hand_value)
+    echo $decision | ./blackjack_game > game_output.txt
 
-    # Read the game output line by line and make decisions
+    # Process the game output
     while IFS= read -r line; do
         echo "Game says: $line"  # Echo the game output for logging
 
-        # Check for hand value and make decision based on that
+        # Extract the hand value if present
         if [[ "$line" =~ You\'ve\ got\ ([0-9]+) ]]; then
-            hand_value="${BASH_REMATCH[1]}"
-            echo "Hand value: $hand_value"
-            decision=$(make_decision "$hand_value")
-            echo "$decision" # Output the decision for the game to read
+            hand_value=${BASH_REMATCH[1]}
+            echo "Detected hand value: $hand_value"
+
+            # Update the decision based on the new hand value
+            decision=$(make_decision $hand_value)
+            echo $decision > decision.txt  # Write decision to a file for input
+
+            # If we have a blackjack or bust, break the loop
+            if [[ "$hand_value" -eq 21 ]]; then
+                echo "✅ PASSED: Blackjack detected."
+                break
+            elif [[ "$hand_value" -gt 21 ]]; then
+                echo "✅ PASSED: Bust detected."
+                break
+            fi
         fi
     done < game_output.txt
+
+    # Check for prompts and messages
+    if grep -iq "blackjack" game_output.txt; then
+        echo "✅ PASSED: Blackjack win message is present."
+    else
+        echo "❌ FAILED: Blackjack win message is not present."
+    fi
+
+    if grep -iq "bust" game_output.txt; then
+        echo "✅ PASSED: Bust message is present."
+    else
+        echo "❌ FAILED: Bust message is not present."
+    fi
+
+    if grep -iq "hit" game_output.txt; then
+        echo "✅ PASSED: Hit prompt is present."
+    else
+        echo "❌ FAILED: Hit prompt is not present."
+    fi
 }
 
-# Play five rounds of blackjack
+# Play multiple rounds of blackjack
 for i in {1..5}; do
     echo "=================================================="
     echo "Starting round $i of blackjack"
     echo "=================================================="
+    sleep 1  # Ensure different seed for random function
     play_blackjack
-    # Delay to ensure different random outcomes
-    sleep 1
 done
+
+# Neatly print the last round program output
+echo "--------------------------------------------------"
+echo "Program Output:"
+echo "--------------------------------------------------"
+cat game_output.txt
+echo "--------------------------------------------------"
+echo "End of Program Output"
+echo "--------------------------------------------------"
