@@ -49,4 +49,5 @@ for i in {1..5}; do
     echo "Starting round $i of blackjack"
     echo "=================================================="
     play_blackjack
+    sleep 1
 done
