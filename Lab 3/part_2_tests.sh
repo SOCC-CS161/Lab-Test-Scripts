@@ -8,9 +8,9 @@ make_decision() {
     local hand_value=$1
     # Standard blackjack strategy: hit if hand value is less than 17
     if [[ "$hand_value" -lt 17 ]]; then
-        echo "y"  # Choose to hit
+        echo "y\n"  # Choose to hit
     else
-        echo "n"  # Choose to stand
+        echo "n\n"  # Choose to stand
     fi
 }
 
