@@ -19,20 +19,29 @@ play_blackjack() {
     echo "Starting round of blackjack"
 
     # Start the game and direct output to a file
-    decision=$(make_decision | make_decision | make_decision | make_decision)
-    echo "$decision" | ./blackjack_game > output.txt
+    decisions=""
+    for _ in {1..4}; do
+        decision=$(make_decision)
+        decisions+="$decision\n"
+        echo "Decision made: $decision"
+    done
+    echo -e "$decisions" | ./blackjack_game > output.txt
 
     # Read each line from the game's output
+    initial_hand_blackjack=false
     while IFS= read -r line; do
         echo "Game says: $line"  # Echo the game output for logging
 
         # Check for "blackjack" or "bust" messages
         if echo "$line" | grep -iq "blackjack"; then
             echo "✅ PASSED: Blackjack win message is present."
+            initial_hand_blackjack=true
         elif echo "$line" | grep -iq "bust"; then
             echo "✅ PASSED: Bust message is present."
         elif echo "$line" | grep -iq "hit"; then
-            echo "✅ PASSED: Hit prompt is present."
+            if ! $initial_hand_blackjack; then
+                echo "✅ PASSED: Hit prompt is present."
+            fi
         fi
     done < output.txt
 
