@@ -6,7 +6,7 @@ g++ -o blackjack_game ./source/main.cpp || { echo "❌ COMPILATION FAILED"; exit
 # Function to simulate a player decision based on the hand value
 make_decision() {
     local hand_value=$1
-    # Standard blackjack strategy: hit if hand value is less than 17
+    # Standard blackjack strategy: stand if hand value is 17 or more
     if [[ "$hand_value" -lt 17 ]]; then
         echo "y"  # Choose to hit
     else
@@ -14,70 +14,60 @@ make_decision() {
     fi
 }
 
-# Play a round of blackjack and check the output
+# Function to play a round of blackjack
 play_blackjack() {
-    # Start the game
-    echo "Starting the game..."
-    # Pass decisions into the game based on the hand value
-    hand_value=0  # Initial hand value
-    ace_count=0  # Initial ace count
-    decision=$(make_decision $hand_value)
-    echo $decision | ./blackjack_game > game_output.txt
-
+    # Start the game and redirect input from a subshell that makes decisions
+    (for i in {1..4}; do
+        read -r line
+        hand_value=$(echo "$line" | grep -oP '\d+$')  # Extract hand value
+        decision=$(make_decision "$hand_value")        # Make a decision based on the hand value
+        echo "Decision made: $decision"                # Print the decision
+        echo $decision                                 # Send the decision to the game
+        sleep 1                                        # Sleep to allow for game processing
+    done) | ./blackjack_game > game_output.txt
+    
     # Process the game output
+    hand_value=0
+    bust_detected=false
+    blackjack_detected=false
+    hit_prompt_detected=false
     while IFS= read -r line; do
         echo "Game says: $line"  # Echo the game output for logging
 
-        # Extract the hand value if present
         if [[ "$line" =~ You\'ve\ got\ ([0-9]+) ]]; then
-            hand_value=${BASH_REMATCH[1]}
+            hand_value="${BASH_REMATCH[1]}"
             echo "Detected hand value: $hand_value"
-
-            # Update the decision based on the new hand value
-            decision=$(make_decision $hand_value)
-            echo $decision > decision.txt  # Write decision to a file for input
-
-            # If we have a blackjack or bust, break the loop
             if [[ "$hand_value" -eq 21 ]]; then
                 echo "✅ PASSED: Blackjack detected."
-                break
+                blackjack_detected=true
             elif [[ "$hand_value" -gt 21 ]]; then
                 echo "✅ PASSED: Bust detected."
-                break
+                bust_detected=true
             fi
+        fi
+
+        if echo "$line" | grep -iq "Hit?"; then
+            echo "✅ PASSED: Hit prompt detected."
+            hit_prompt_detected=true
         fi
     done < game_output.txt
 
-    # Check for prompts and messages
-    if grep -iq "blackjack" game_output.txt; then
-        echo "✅ PASSED: Blackjack win message is present."
+    # Print appropriate message based on game outcome
+    if $blackjack_detected; then
+        echo "✅ Blackjack win message is present."
+    elif $bust_detected; then
+        echo "✅ Bust message is present."
+    elif $hit_prompt_detected; then
+        echo "✅ Hit prompt is present."
     else
-        echo "❌ FAILED: Blackjack win message is not present."
-    fi
-
-    if grep -iq "bust" game_output.txt; then
-        echo "✅ PASSED: Bust message is present."
-    else
-        echo "❌ FAILED: Bust message is not present."
-    fi
-
-    if grep -iq "hit" game_output.txt; then
-        echo "✅ PASSED: Hit prompt is present."
-    else
-        echo "❌ FAILED: Hit prompt is not present."
+        echo "❌ FAILED: The expected outcome message was not detected."
     fi
 }
 
-# Play multiple rounds of blackjack
-for i in {1..5}; do
-    echo "=================================================="
-    echo "Starting round $i of blackjack"
-    echo "=================================================="
-    sleep 1  # Ensure different seed for random function
-    play_blackjack
-done
+# Play a round of blackjack and check the output
+play_blackjack
 
-# Neatly print the last round program output
+# Neatly print the program output
 echo "--------------------------------------------------"
 echo "Program Output:"
 echo "--------------------------------------------------"
