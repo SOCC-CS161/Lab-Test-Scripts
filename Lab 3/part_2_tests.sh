@@ -18,32 +18,30 @@ make_decision() {
 play_blackjack() {
     echo "Starting round of blackjack"
 
-    # Start the game and direct output to a file
-    decisions=""
-    for _ in {1..4}; do
-        decision=$(make_decision)
-        decisions+="$decision\n"
-        echo "Decision made: $decision"
-    done
-    echo -e "$decisions" | ./blackjack_game > output.txt
+    # Initialize variables
+    hand_value=0
+    decision=""
 
-    # Read each line from the game's output
-    initial_hand_blackjack=false
-    while IFS= read -r line; do
+    # Start the game and interact with it based on the hand value
+    ( while true; do
+        # Read the next line from the game's output
+        if ! IFS= read -r line; then
+            break
+        fi
+
         echo "Game says: $line"  # Echo the game output for logging
 
-        # Check for "blackjack" or "bust" messages
-        if echo "$line" | grep -iq "blackjack"; then
-            echo "✅ PASSED: Blackjack win message is present."
-            initial_hand_blackjack=true
-        elif echo "$line" | grep -iq "bust"; then
-            echo "✅ PASSED: Bust message is present."
-        elif echo "$line" | grep -iq "hit"; then
-            if ! $initial_hand_blackjack; then
-                echo "✅ PASSED: Hit prompt is present."
-            fi
+        # Check if the line contains the hand value
+        if [[ "$line" =~ You\'ve\ got\ ([0-9]+) ]]; then
+            hand_value="${BASH_REMATCH[1]}"
+            echo "Detected hand value: $hand_value"
+
+            # Make a decision based on the hand value
+            decision=$(make_decision "$hand_value")
+            echo "Decision made: $decision"
+            echo $decision
         fi
-    done < output.txt
+    done ) | ./blackjack_game > output.txt
 
     # Neatly print the program output for this round
     echo "--------------------------------------------------"
