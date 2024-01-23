@@ -3,41 +3,42 @@
 # Compile the blackjack game
 g++ -o blackjack_game ./source/main.cpp || { echo "❌ COMPILATION FAILED"; exit 1; }
 
-# Function to play a round of blackjack and check the output
+# Function to play a round of blackjack
 play_blackjack() {
     echo "=================================================="
     echo "Starting round of blackjack"
     echo "=================================================="
 
-    # Start the game and handle its output/input dynamically
-    {
-        while read -r line; do
-            echo "Game says: $line"  # Echo the game output for logging
+    # Prepare decisions for the game (maximum four decisions)
+    decisions=$(printf "y\ny\ny\ny\n")
 
-            # Check for "blackjack" or "bust" messages
-            if echo "$line" | grep -iq "blackjack"; then
-                echo "✅ PASSED: Blackjack win message is present."
-                break
-            elif echo "$line" | grep -iq "bust"; then
-                echo "✅ PASSED: Bust message is present."
-                break
-            elif echo "$line" | grep -iq "hit"; then
-                echo "✅ PASSED: Hit prompt is present."
-                # Extract hand value
-                hand_value=$(echo "$line" | grep -oP '\d+')
-                # Make a decision based on the hand value
-                if [[ "$hand_value" -lt 17 ]]; then
-                    echo "y/n"  # Choose to hit
-                else
-                    echo "n/n"  # Choose to stand
-                fi
-            fi
-        done
-    } | ./blackjack_game | tee output.txt
+    # Run the game and capture the output
+    echo -e "$decisions" | ./blackjack_game > output.txt
+
+    # Analyze the output
+    if grep -iq "blackjack" output.txt; then
+        echo "✅ PASSED: Blackjack win message is present."
+    fi
+
+    if grep -iq "bust" output.txt; then
+        echo "✅ PASSED: Bust message is present."
+    fi
+
+    if grep -iq "hit" output.txt; then
+        echo "✅ PASSED: Hit prompt is present."
+    fi
+
+    # Print the program output for this round
+    echo "--------------------------------------------------"
+    echo "Program Output for this round:"
+    cat output.txt
+    echo "--------------------------------------------------"
+    echo "End of Program Output for this round"
+    echo "--------------------------------------------------"
 }
 
-# Run 5 rounds of blackjack
+# Run multiple rounds of blackjack
 for i in {1..5}; do
     play_blackjack
-    sleep 1  # Ensure different random seeds
+    sleep 1 # Ensure different random seeds
 done
