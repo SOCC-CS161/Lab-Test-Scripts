@@ -19,7 +19,7 @@ play_blackjack() {
     # Start the game
     echo "Starting the game..."
     # Pass decisions into the game. Assume up to four decisions (hit/stand).
-    make_decision | make_decision | make_decision | make_decision | ./blackjack_game > game_output.txt
+    make_decision | make_decision | make_decision | make_decision | ./blackjack_game > output.txt
 
     # Check for hand value and cards on one line, and the score value on the next line
     hand_value_detected=false
@@ -50,20 +50,20 @@ play_blackjack() {
         if echo "$line" | grep -iq "hit"; then
             echo "✅ PASSED: Hit prompt detected."
         fi
-    done < game_output.txt
+    done < output.txt
 }
 
 # Validate the output
 # Check if the correct prompts are present
-if ! grep -iq "blackjack" game_output.txt; then
+if ! grep -iq "blackjack" output.txt; then
     echo "❌ FAILED: Blackjack win message is not present."
 fi
 
-if ! grep -iq "bust" game_output.txt; then
+if ! grep -iq "bust" output.txt; then
     echo "❌ FAILED: Bust message is not present."
 fi
 
-if ! grep -iq "hit" game_output.txt; then
+if ! grep -iq "hit" output.txt; then
     echo "❌ FAILED: Hit prompt is not present."
 fi
 
