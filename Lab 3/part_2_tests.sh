@@ -12,7 +12,7 @@ make_decision() {
     else
         echo "n\n"  # Choose to stand
     fi
-}
+} | ./blackjack_game
 
 # Function to play a round of blackjack and check the output
 play_blackjack() {
@@ -40,7 +40,7 @@ play_blackjack() {
                 break  # Exit the loop if there's no more input
             fi
         done
-    } | ./blackjack_game
+    }
 
     echo "--------------------------------------------------"
     echo "End of Program Output for this round"
