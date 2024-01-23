@@ -20,26 +20,24 @@ play_blackjack() {
     echo "Starting round of blackjack"
     echo "=================================================="
 
-    # Start the game and direct output to a file
-    { 
-        while IFS= read -r line; do
-            echo "$line"  # Echo the game output for logging
+    # Start the game
+    ./blackjack_game | while IFS= read -r line; do
+        echo "$line"  # Echo the game output for logging
 
-            # Check for hand value
-            if [[ "$line" =~ "You've got" ]]; then
-                hand_value=$(echo "$line" | grep -oP '\d+')
-                decision=$(make_decision "$hand_value")
-                echo "$decision"  # Make a decision based on the hand value
-                continue
-            fi
+        # Check for hand value
+        if [[ "$line" =~ "You've got" ]]; then
+            hand_value=$(echo "$line" | grep -oP '\d+')
+            decision=$(make_decision "$hand_value")
+            echo "Decision made: $decision"  # Log the decision
+            echo "$decision" >&3  # Send decision to the game
+        fi
 
-            # Check for game end conditions
-            if [[ "$line" =~ "Blackjack" || "$line" =~ "Bust" ]]; then
-                echo "✅ PASSED: Game ended with a message: $line"
-                break
-            fi
-        done
-    } | ./blackjack_game
+        # Check for game end conditions
+        if [[ "$line" =~ "Blackjack" || "$line" =~ "Bust" ]]; then
+            echo "✅ PASSED: Game ended with a message: $line"
+            break
+        fi
+    done 3>&1
 
     echo "--------------------------------------------------"
     echo "End of Program Output for this round"
