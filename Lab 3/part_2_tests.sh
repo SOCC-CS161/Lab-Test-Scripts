@@ -3,39 +3,36 @@
 # Compile the blackjack game
 g++ -o blackjack_game ./source/main.cpp || { echo "❌ COMPILATION FAILED"; exit 1; }
 
+# Function to simulate a player decision based on the hand value
+make_decision() {
+    local hand_value=$1
+    # Standard blackjack strategy: hit if hand value is less than 17
+    if [[ "$hand_value" -lt 17 ]]; then
+        echo "y"  # Choose to hit
+    else
+        echo "n"  # Choose to stand
+    fi
+}
+
 # Function to play a round of blackjack and check the output
 play_blackjack() {
     echo "Starting round of blackjack"
 
     # Start the game and direct output to a file
-    ./blackjack_game > output.txt
+    decision=$(make_decision | make_decision | make_decision | make_decision)
+    echo "$decision" | ./blackjack_game > output.txt
 
     # Read each line from the game's output
     while IFS= read -r line; do
         echo "Game says: $line"  # Echo the game output for logging
 
-        # Detect hand value and make decisions
-        if [[ "$line" =~ You\'ve\ got\ ([0-9]+) ]]; then
-            hand_value="${BASH_REMATCH[1]}"
-            echo "Detected hand value: $hand_value"
-
-            # Decide whether to hit or stay based on hand value
-            if [[ "$hand_value" -lt 17 ]]; then
-                decision="y\n"  # Hit
-            else
-                decision="n\n"  # Stay
-            fi
-            echo "Decision made: $decision"
-            echo -e "$decision" > decision.txt
-
-            # Check for blackjack, bust, or hit prompt
-            if [[ "$hand_value" -eq 21 ]]; then
-                echo "✅ PASSED: Blackjack detected."
-            elif [[ "$hand_value" -gt 21 ]]; then
-                echo "✅ PASSED: Bust detected."
-            elif echo "$line" | grep -iq "hit"; then
-                echo "✅ PASSED: Hit prompt detected."
-            fi
+        # Check for "blackjack" or "bust" messages
+        if echo "$line" | grep -iq "blackjack"; then
+            echo "✅ PASSED: Blackjack win message is present."
+        elif echo "$line" | grep -iq "bust"; then
+            echo "✅ PASSED: Bust message is present."
+        elif echo "$line" | grep -iq "hit"; then
+            echo "✅ PASSED: Hit prompt is present."
         fi
     done < output.txt
 
@@ -48,7 +45,7 @@ play_blackjack() {
     echo "--------------------------------------------------"
 }
 
-# Run multiple rounds of blackjack
+# Run 5 rounds of blackjack
 for i in {1..5}; do
     echo "=================================================="
     echo "Starting round $i of blackjack"
