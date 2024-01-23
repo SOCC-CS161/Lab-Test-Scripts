@@ -14,7 +14,7 @@ make_decision() {
     fi
 }
 
-# Play a round of blackjack and check the output
+# Function to play a round of blackjack and check the output
 play_blackjack() {
     # Start the game
     echo "Starting the game..."
@@ -22,7 +22,6 @@ play_blackjack() {
     make_decision | make_decision | make_decision | make_decision | ./blackjack_game > output.txt
 
     # Check for hand value and cards on one line, and the score value on the next line
-    hand_value_detected=false
     while IFS= read -r line; do
         # Check for "blackjack" or "bust" messages
         if echo "$line" | grep -iq "blackjack"; then
@@ -33,16 +32,21 @@ play_blackjack() {
             echo "✅ PASSED: Hit prompt is present."
         fi
     done < output.txt
+
+    # Neatly print the program output for this round
+    echo "--------------------------------------------------"
+    echo "Program Output for this round:"
+    echo "--------------------------------------------------"
+    cat output.txt
+    echo "--------------------------------------------------"
+    echo "End of Program Output for this round"
+    echo "--------------------------------------------------"
 }
 
-# Invoke the play_blackjack function
-play_blackjack
-
-# Neatly print the program output
-echo "--------------------------------------------------"
-echo "Program Output:"
-echo "--------------------------------------------------"
-cat output.txt
-echo "--------------------------------------------------"
-echo "End of Program Output"
-echo "--------------------------------------------------"
+# Run 5 rounds of blackjack
+for i in {1..5}; do
+    echo "=================================================="
+    echo "Starting round $i of blackjack"
+    echo "=================================================="
+    play_blackjack
+done
