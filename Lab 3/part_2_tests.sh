@@ -11,7 +11,7 @@ play_blackjack() {
 
     # Start the game and handle its output/input dynamically
     {
-        while IFS= read -r line; do
+        while read -r line; do
             echo "Game says: $line"  # Echo the game output for logging
 
             # Check for "blackjack" or "bust" messages
@@ -27,11 +27,9 @@ play_blackjack() {
                 hand_value=$(echo "$line" | grep -oP '\d+')
                 # Make a decision based on the hand value
                 if [[ "$hand_value" -lt 17 ]]; then
-                    echo "y"  # Choose to hit
-                    echo "Decision made: Hit"
+                    echo "y/n"  # Choose to hit
                 else
-                    echo "n"  # Choose to stand
-                    echo "Decision made: Stand"
+                    echo "n/n"  # Choose to stand
                 fi
             fi
         done
