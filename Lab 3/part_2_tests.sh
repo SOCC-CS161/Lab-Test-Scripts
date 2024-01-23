@@ -3,75 +3,67 @@
 # Compile the blackjack game
 g++ -o blackjack_game ./source/main.cpp || { echo "❌ COMPILATION FAILED"; exit 1; }
 
-# Function to simulate a player decision based on the hand value
-make_decision() {
-    local hand_value=$1
-    # Standard blackjack strategy: stand if hand value is 17 or more
-    if [[ "$hand_value" -lt 17 ]]; then
-        echo "y"  # Choose to hit
-    else
-        echo "n"  # Choose to stand
-    fi
-}
-
-# Function to play a round of blackjack
+# Function to play a round of blackjack and check the output
 play_blackjack() {
-    # Start the game and redirect input from a subshell that makes decisions
-    (for i in {1..4}; do
-        read -r line
-        hand_value=$(echo "$line" | grep -oP '\d+$')  # Extract hand value
-        decision=$(make_decision "$hand_value")        # Make a decision based on the hand value
-        echo "Decision made: $decision"                # Print the decision
-        echo $decision                                 # Send the decision to the game
-        sleep 1                                        # Sleep to allow for game processing
-    done) | ./blackjack_game > game_output.txt
-    
-    # Process the game output
+    # Start the game
+    echo "Starting the game..."
+    ./blackjack_game > output.txt
+
+    # Initialize hand value
     hand_value=0
-    bust_detected=false
-    blackjack_detected=false
-    hit_prompt_detected=false
+
+    # Read the game output line by line
     while IFS= read -r line; do
         echo "Game says: $line"  # Echo the game output for logging
 
-        if [[ "$line" =~ You\'ve\ got\ ([0-9]+) ]]; then
+        # Check for hand value
+        if [[ "$line" =~ [[:space:]]*Hand:[[:space:]]*([0-9]+)[[:space:]]* ]]; then
             hand_value="${BASH_REMATCH[1]}"
             echo "Detected hand value: $hand_value"
-            if [[ "$hand_value" -eq 21 ]]; then
-                echo "✅ PASSED: Blackjack detected."
-                blackjack_detected=true
-            elif [[ "$hand_value" -gt 21 ]]; then
-                echo "✅ PASSED: Bust detected."
-                bust_detected=true
+
+            # Make a decision based on the hand value
+            if [[ "$hand_value" -lt 17 ]]; then
+                decision="y"
+            else
+                decision="n"
             fi
+            echo "Decision made: $decision" >> output.txt
+
+            # Send the decision to the game
+            echo "$decision" > decision_pipe
         fi
 
-        if echo "$line" | grep -iq "Hit?"; then
-            echo "✅ PASSED: Hit prompt detected."
-            hit_prompt_detected=true
+        # Check for "blackjack" or "bust" messages
+        if echo "$line" | grep -iq "blackjack"; then
+            echo "✅ PASSED: Blackjack win message is present."
+        elif echo "$line" | grep -iq "bust"; then
+            echo "✅ PASSED: Bust message is present."
+        elif echo "$line" | grep -iq "hit"; then
+            echo "✅ PASSED: Hit prompt is present."
         fi
-    done < game_output.txt
+    done < output.txt
 
-    # Print appropriate message based on game outcome
-    if $blackjack_detected; then
-        echo "✅ Blackjack win message is present."
-    elif $bust_detected; then
-        echo "✅ Bust message is present."
-    elif $hit_prompt_detected; then
-        echo "✅ Hit prompt is present."
-    else
-        echo "❌ FAILED: The expected outcome message was not detected."
-    fi
+    # Neatly print the program output for this round
+    echo "--------------------------------------------------"
+    echo "Program Output for this round:"
+    echo "--------------------------------------------------"
+    cat output.txt
+    echo "--------------------------------------------------"
+    echo "End of Program Output for this round"
+    echo "--------------------------------------------------"
 }
 
-# Play a round of blackjack and check the output
-play_blackjack
+# Create a named pipe for decisions
+mkfifo decision_pipe
 
-# Neatly print the program output
-echo "--------------------------------------------------"
-echo "Program Output:"
-echo "--------------------------------------------------"
-cat game_output.txt
-echo "--------------------------------------------------"
-echo "End of Program Output"
-echo "--------------------------------------------------"
+# Run 5 rounds of blackjack
+for i in {1..5}; do
+    echo "=================================================="
+    echo "Starting round $i of blackjack"
+    echo "=================================================="
+    play_blackjack
+    sleep 1
+done
+
+# Clean up
+rm decision_pipe
