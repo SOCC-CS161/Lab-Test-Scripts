@@ -3,58 +3,36 @@
 # Compile the blackjack game
 g++ -o blackjack_game ./source/main.cpp || { echo "❌ COMPILATION FAILED"; exit 1; }
 
-# Function to simulate a player decision based on the hand value
-make_decision() {
-    local hand_value=$1
-    # Standard blackjack strategy: hit if hand value is less than 17
-    if [[ "$hand_value" -lt 17 ]]; then
-        echo "y"  # Choose to hit
-    else
-        echo "n"  # Choose to stand
-    fi
-}
-
 # Function to play a round of blackjack and check the output
 play_blackjack() {
     echo "Starting round of blackjack"
 
-    # Start the game and interact with it based on the hand value
+    # Start the game and direct output to a file
     {
-        while true; do
-            # Read the next line from the game's output
-            if ! IFS= read -r line; then
-                break
-            fi
-
+        while IFS= read -r line; do
             echo "Game says: $line"  # Echo the game output for logging
 
-            # Check if the line contains the hand value
-            if [[ "$line" =~ You\'ve\ got\ ([0-9]+) ]]; then
-                hand_value="${BASH_REMATCH[1]}"
-                echo "Detected hand value: $hand_value"
-
-                # Make a decision based on the hand value
-                decision=$(make_decision "$hand_value")
-                echo "Decision made: $decision"
-                echo $decision
+            # Check for "blackjack" or "bust" messages
+            if echo "$line" | grep -iq "blackjack"; then
+                echo "✅ PASSED: Blackjack win message is present."
+                break  # End the loop if blackjack is achieved
+            elif echo "$line" | grep -iq "bust"; then
+                echo "✅ PASSED: Bust message is present."
+                break  # End the loop if bust occurs
+            elif echo "$line" | grep -iq "hit"; then
+                echo "✅ PASSED: Hit prompt is present."
+                # Extract the hand value and make a decision
+                hand_value=$(echo "$line" | grep -oP '\d+')
+                if [[ "$hand_value" -lt 17 ]]; then
+                    echo "Decision made: Hit"
+                    echo "y"  # Choose to hit
+                else
+                    echo "Decision made: Stand"
+                    echo "n"  # Choose to stand
+                fi
             fi
         done
     } | ./blackjack_game > output.txt
-
-    # Check for specific messages in the output
-    initial_hand_blackjack=false
-    while IFS= read -r line; do
-        if echo "$line" | grep -iq "blackjack"; then
-            echo "✅ PASSED: Blackjack win message is present."
-            initial_hand_blackjack=true
-        elif echo "$line" | grep -iq "bust"; then
-            echo "✅ PASSED: Bust message is present."
-        elif echo "$line" | grep -iq "hit"; then
-            if ! $initial_hand_blackjack; then
-                echo "✅ PASSED: Hit prompt is present."
-            fi
-        fi
-    done < output.txt
 
     # Neatly print the program output for this round
     echo "--------------------------------------------------"
