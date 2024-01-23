@@ -23,9 +23,9 @@ play_blackjack() {
 
             # Make a decision based on the hand value
             if [[ "$hand_value" -lt 17 ]]; then
-                decision="y"
+                decision="y\n"
             else
-                decision="n"
+                decision="n\n"
             fi
             echo "Decision made: $decision" >> output.txt
 
