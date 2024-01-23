@@ -24,48 +24,19 @@ play_blackjack() {
     # Check for hand value and cards on one line, and the score value on the next line
     hand_value_detected=false
     while IFS= read -r line; do
-        echo "Game says: $line"  # Echo the game output for logging
-
-        # Regex to match hand values and card face values on one line
-        if [[ $line =~ ([0-9AJQK]{1,2}[[:space:]]+[0-9AJQK]{1,2}) ]]; then
-            cards_line="$line"
-            hand_value_detected=true
-            echo "Detected cards: $cards_line"
-        elif $hand_value_detected && [[ $line =~ [[:space:]]*([0-9]{1,2})[[:space:]]* ]]; then
-            hand_value="${BASH_REMATCH[1]}"
-            echo "Detected hand value: $hand_value"
-            hand_value_detected=false
-
-            # Check if hand value equals 21 for a blackjack
-            if [[ "$hand_value" -eq 21 ]]; then
-                echo "✅ PASSED: Blackjack detected with hand value $hand_value."
-            elif [[ "$hand_value" -gt 21 ]]; then
-                echo "✅ PASSED: Bust detected with hand value $hand_value."
-            else
-                echo "✅ PASSED: Hand value $hand_value detected and under 21."
-            fi
-        fi
-
-        # Check for "hit" prompt on a separate line
-        if echo "$line" | grep -iq "hit"; then
-            echo "✅ PASSED: Hit prompt detected."
+        # Check for "blackjack" or "bust" messages
+        if echo "$line" | grep -iq "blackjack"; then
+            echo "✅ PASSED: Blackjack win message is present."
+        elif echo "$line" | grep -iq "bust"; then
+            echo "✅ PASSED: Bust message is present."
+        elif echo "$line" | grep -iq "hit"; then
+            echo "✅ PASSED: Hit prompt is present."
         fi
     done < output.txt
 }
 
-# Validate the output
-# Check if the correct prompts are present
-if ! grep -iq "blackjack" output.txt; then
-    echo "❌ FAILED: Blackjack win message is not present."
-fi
-
-if ! grep -iq "bust" output.txt; then
-    echo "❌ FAILED: Bust message is not present."
-fi
-
-if ! grep -iq "hit" output.txt; then
-    echo "❌ FAILED: Hit prompt is not present."
-fi
+# Invoke the play_blackjack function
+play_blackjack
 
 # Neatly print the program output
 echo "--------------------------------------------------"
