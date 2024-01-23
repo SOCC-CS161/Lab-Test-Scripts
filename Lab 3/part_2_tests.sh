@@ -14,6 +14,7 @@ play_blackjack() {
 
     # Run the game and capture the output
     echo -e "$decisions" | ./blackjack_game > output.txt
+    echo -e "$decisions"
 
     # Analyze the output
     if grep -iq "blackjack" output.txt; then
