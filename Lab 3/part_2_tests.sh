@@ -7,13 +7,9 @@ run_test() {
     local expected_cards=$3
     local expected_value=$4
 
-     # Navigate to the directory containing main.cpp
-    echo "The current working directory is: $(pwd)"
-    cd ./source || { echo "❌ FAILED to navigate to source directory"; exit 1; }
-
 
     # Replace time(0) with the fixed seed value and compile from stdin
-    sed "s/time(0)/$seed/" main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
+    sed "s/time(0)/$seed/" ./main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
 
     # Run the game, pass the input and capture the output
@@ -49,8 +45,6 @@ scenarios["Bust on first hit"]="0 'y\n' 'K J 0' 'Bust'"
 scenarios["Bust on second hit"]="1 'y\ny\n' '3 8 4 7' 'Bust'"
 scenarios["Bust on third hit"]="9 'y\ny\ny\n' '4 3 2 K 3' 'Bust'"
 
-# Backup main.cpp before replacement
-cp main.cpp main.cpp.bak
 
 # Run tests for each scenario
 for scenario in "${!scenarios[@]}"; do
@@ -61,5 +55,3 @@ for scenario in "${!scenarios[@]}"; do
     run_test "${ADDR[0]}" "${ADDR[1]}" "${ADDR[2]}" "${ADDR[3]}"
 done
 
-# Restore the original main.cpp
-mv main.cpp.bak main.cpp
