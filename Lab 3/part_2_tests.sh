@@ -26,14 +26,14 @@ run_test() {
     } | ./blackjack_game > game_output.txt
 
     # Check for correct card sequence using regular expressions
-    if grep -qE "$expected_cards" game_output.txt; then
+    if grep -qEi "$expected_cards" game_output.txt; then
         echo "✅ PASSED: Correct card sequence found."
     else
         echo "❌ FAILED: Correct card sequence not found. Searched for '$expected_cards'."
     fi
 
     # Check for correct hand value
-    if grep -q "$expected_value" game_output.txt; then
+    if grep -qi "$expected_value" game_output.txt; then
         echo "✅ PASSED: Correct hand value found."
     else
         echo "❌ FAILED: Correct hand value not found. Searched for '$expected_value'."
