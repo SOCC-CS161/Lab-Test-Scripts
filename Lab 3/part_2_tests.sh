@@ -43,7 +43,7 @@ run_test() {
 # Scenario details with regular expression patterns and exact phrases
 declare -A scenarios
 scenarios["Blackjack on initial hand"]="0 '' 'A[[:space:][:punct:]]*0' 'A 0' 'Blackjack! You won!!'"
-scenarios["Blackjack on second hand no ace"]="15 'y' 'J[[:space:][:punct:]]*3[[:space:][:punct:]]*8' 'J 3 8' 'Blackjack!!'"
+scenarios["Blackjack on second hand no ace"]="15 'y' 'J[[:space:][:punct:]]*3[[:space:][:punct:]]*8' 'J 3 8' 'You\'ve got 21. Blackjack!!'"
 scenarios["Ace revalued from 11 to 1"]="11 'y' '9[[:space:][:punct:]]*A[[:space:][:punct:]]*8' '9 A 8' '.*'"
 scenarios["Bust on first hit"]="3 'y' '7[[:space:][:punct:]]*9[[:space:][:punct:]]*0' '7 9 0' 'Bust! You Lose!'"
 scenarios["Bust on second hit"]="12 'y y' '6[[:space:][:punct:]]*3[[:space:][:punct:]]*8[[:space:][:punct:]]*8' '6 3 8 8' 'Bust! You Lose!'"
@@ -59,13 +59,13 @@ for scenario in "${!scenarios[@]}"; do
     
     # Extract seed, inputs, expected cards, display version, and values
     seed="${scenario_details%% *}"
-    remaining="${scenario_details#* }"
-    inputs=$(echo "$remaining" | cut -d"'" -f2)
-    inputs="${inputs// /}"  # Remove spaces from inputs
-    remaining=$(echo "$remaining" | cut -d"'" -f3-)
-    expected_cards=$(echo "$remaining" | cut -d"'" -f1)
-    expected_cards_display=$(echo "$remaining" | cut -d"'" -f2)
-    expected_value=$(echo "$remaining" | cut -d"'" -f4)
+    inputs="${scenario_details#* }"
+    inputs="${inputs%% *}"
+    expected_cards="${scenario_details#*\' }"
+    expected_cards="${expected_cards%%\'*}"
+    expected_cards_display="${scenario_details#*\'*\' }"
+    expected_cards_display="${expected_cards_display%%\'*}"
+    expected_value="${scenario_details##*\' }"
 
     run_test "$seed" "$inputs" "$expected_cards" "$expected_cards_display" "$expected_value"
 done
