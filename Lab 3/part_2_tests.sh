@@ -3,7 +3,7 @@
  # Check if time(0) is present in the source code
     if ! grep -q "time(0)" ./source/main.cpp; then
         echo "❌ FAILED: 'time(0)' not found in source code. Ensure srand() is properly seeded."
-        return 1  # Exit this function with an error status
+        exit 1  # Exit this script with an error status
     fi
     
 # Function to replace seed, compile, run the game, and check the results
