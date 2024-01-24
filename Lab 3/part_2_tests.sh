@@ -51,12 +51,21 @@ for scenario in "${!scenarios[@]}"; do
     echo "=================================================="
     
     scenario_details="${scenarios[$scenario]}"
+    
+    # Extract seed
     seed="${scenario_details%% *}"
-    remaining="${scenario_details#* }"
-    input="${remaining%% *}"
-    remaining="${remaining#* }"
-    expected_cards="${remaining%% *}"
-    expected_value="${remaining#* }"
+    scenario_details="${scenario_details#* }"
+    
+    # Extract input
+    input="${scenario_details%%\'*}"
+    scenario_details="${scenario_details#*\' }"
+    
+    # Extract expected cards
+    expected_cards="${scenario_details%%\'*}"
+    scenario_details="${scenario_details#*\' }"
+    
+    # Remaining is expected value
+    expected_value="${scenario_details}"
 
     run_test "$seed" "$input" "$expected_cards" "$expected_value"
 done
