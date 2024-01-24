@@ -21,7 +21,7 @@ run_test() {
     {
         for (( i=0; i<${#inputs}; i++ )); do
             echo -e "${inputs:$i:1}\n"
-            sleep 1  # Add a delay of 1 second between inputs
+            #sleep 1  # Add a delay of 1 second between inputs
         done
     } | ./blackjack_game > game_output.txt
 
