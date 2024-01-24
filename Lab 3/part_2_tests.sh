@@ -11,7 +11,7 @@ play_blackjack() {
     local win_count=0
 
     # Number of rounds to run
-    local NUMBER_OF_ROUNDS=1000
+    local NUMBER_OF_ROUNDS=10000
 
     for i in $(seq 1 $NUMBER_OF_ROUNDS); do
         echo -e "$input_sequence" | ./blackjack_game > output.txt
