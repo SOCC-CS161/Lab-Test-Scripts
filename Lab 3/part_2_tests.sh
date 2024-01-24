@@ -8,10 +8,10 @@ run_test() {
     local expected_value=$4
 
     # Replace time(0) with the fixed seed value
-    sed -i "s/time(0)/$seed/" main.cpp
+    sed -i "s/time(0)/$seed/" ./source/main.cpp
 
     # Compile the modified game code
-    g++ main.cpp -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
+    g++ ./source/main.cpp -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
     # Run the game, pass the input and capture the output
     echo -e "$input" | ./blackjack_game > game_output.txt
