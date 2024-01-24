@@ -12,8 +12,8 @@ play_blackjack() {
 
     for (( i=0; i<1000; i++ )); do
         # Run the game with predetermined hits
-        yes 'y' | head -n "$hits" | ./blackjack_game > game_output.txt
-        yes 'n' | ./blackjack_game >> game_output.txt
+        yes 'y/' | head -n "$hits" | ./blackjack_game > game_output.txt
+        yes 'n/' | ./blackjack_game >> game_output.txt
 
         # Check the outcome
         if grep -iq "blackjack" game_output.txt; then
