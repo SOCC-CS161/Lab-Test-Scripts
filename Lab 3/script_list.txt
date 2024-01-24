@@ -1,1 +1,1 @@
-comps.sh
+part_3_tests.sh
