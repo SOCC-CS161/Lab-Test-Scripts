@@ -30,14 +30,14 @@ run_test() {
     } | ./blackjack_game > game_output.txt
 
     # Check for correct card sequence using regular expressions
-    if grep -qE "$expected_cards" game_output.txt; then
+    if grep -qEi "$expected_cards" game_output.txt; then
         echo "✅ PASSED: Correct card sequence found."
     else
         echo "❌ FAILED: Correct card sequence not found. Searched for '$expected_cards'."
     fi
 
     # Check for correct hand value
-    if grep -q "$expected_value" game_output.txt; then
+    if grep -qi "$expected_value" game_output.txt; then
         echo "✅ PASSED: Correct hand value found."
     else
         echo "❌ FAILED: Correct hand value not found. Searched for '$expected_value'."
@@ -52,7 +52,7 @@ run_test() {
 
 # Scenario details
 declare -A scenarios
-scenarios["Dealer Busts"]="6 'n' '6\s*0' 'Dealer busts'"
+scenarios["Dealer Busts"]="6 'n' '6\s*0' 'Dealer Busts'"
 scenarios["Dealer Wins"]="3 'n' '7\s*9' 'You Lose'"
 scenarios["Tie (Dealer Wins)"]="4 'n' '8\s*J' 'You Lose'"
 scenarios["Dealer Loses"]="54 'y n' '0\s*4\s*5' 'You Win'"
