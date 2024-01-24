@@ -46,7 +46,7 @@ scenarios["Blackjack on second hand no ace"]="15 'y' 'J\s*3\s*8' 'Blackjack'"
 scenarios["Ace revalued from 11 to 1"]="11 'y' '9\s*A\s*8' '.*'"
 scenarios["Bust on first hit"]="3 'y' '7\s*9\s*0' 'Bust'"
 scenarios["Bust on second hit"]="12 'y y' '6\s*3\s*8\s*8' 'Bust'"
-scenarios["Bust on third hit"]="8 'y y y' '2\s*3\s*8\s*7\s*K' 'Bust'"
+scenarios["Bust on third hit"]="8 'y y y' '2\s*3\s*5\s*7\s*K' 'Bust'"
 
 # Run tests for each scenario
 for scenario in "${!scenarios[@]}"; do
