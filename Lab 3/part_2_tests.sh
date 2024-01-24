@@ -64,8 +64,8 @@ for scenario in "${!scenarios[@]}"; do
     expected_cards="${scenario_details%%\'*}"
     scenario_details="${scenario_details#*\' }"
     
-    # Remaining is expected value
-    expected_value="${scenario_details}"
+    # Extract expected value
+    expected_value="${scenario_details%\'*}"
 
     run_test "$seed" "$input" "$expected_cards" "$expected_value"
 done
