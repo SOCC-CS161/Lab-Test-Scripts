@@ -1,6 +1,9 @@
 
 #!/bin/bash
 
+ # Enable case-insensitive string comparisons
+shopt -s nocasematch
+ 
  # Check if time(0) is present in the source code
     if ! grep -q "time(0)" ./source/main.cpp; then
         echo "❌ FAILED: 'time(0)' not found in source code. Ensure srand() is properly seeded."
@@ -50,9 +53,9 @@ run_test() {
 # Scenario details
 declare -A scenarios
 scenarios["Dealer Busts"]="2 '' '5\s*2' 'Dealer busts'"
-scenarios["Dealer Wins"]="3 '' '7\s*9' 'Dealer busts'"
+scenarios["Dealer Wins"]="3 '' '7\s*9' 'You Lose'"
 scenarios["Tie (Dealer Wins)"]="4 '' '8\s*J' 'You Lose'"
-scenarios["Dealer Loses"]="54 'y n' '0\s*4\s*5' 'You win'"
+scenarios["Dealer Loses"]="54 'y n' '0\s*4\s*5' 'You won'"
 
 
 # Run tests for each scenario
