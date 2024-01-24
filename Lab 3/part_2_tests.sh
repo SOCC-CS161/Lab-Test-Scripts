@@ -3,58 +3,35 @@
 # Compile the blackjack game
 g++ -o blackjack_game ./source/main.cpp || { echo "❌ COMPILATION FAILED"; exit 1; }
 
-# Function to simulate a player decision based on the hand value
-make_decision() {
-    local hand_value=$1
-    # Standard blackjack strategy: hit if hand value is less than 17
-    if [[ "$hand_value" -lt 17 ]]; then
-        echo "y"  # Choose to hit
-    else
-        echo "n"  # Choose to stand
-    fi
-}
-
-# Function to play a round of blackjack and check the output
+# Function to play a round of blackjack
 play_blackjack() {
-    echo "=================================================="
-    echo "Starting round of blackjack"
-    echo "=================================================="
+    local hits=$1
+    local blackjacks=0
+    local wins=0
+    local busts=0
 
-    # Start the game
-    ./blackjack_game > output.txt &
+    for (( i=0; i<1000; i++ )); do
+        # Run the game with predetermined hits
+        yes 'y' | head -n "$hits" | ./blackjack_game > game_output.txt
+        yes 'n' | ./blackjack_game >> game_output.txt
 
-    # Get the PID of the game process
-    game_pid=$!
+        # Check the outcome
+        if grep -iq "blackjack" game_output.txt; then
+            ((blackjacks++))
+        elif grep -iq "win" game_output.txt; then
+            ((wins++))
+        elif grep -iq "bust" game_output.txt; then
+            ((busts++))
+        fi
+    done
 
-    # Function to process the game output
-    process_game_output() {
-        while IFS= read -r line; do
-            echo "Game says: $line"  # Echo the game output for logging
-
-            # Check for "blackjack" or "bust" messages
-            if echo "$line" | grep -iq "blackjack"; then
-                echo "✅ PASSED: Blackjack win message is present."
-            elif echo "$line" | grep -iq "bust"; then
-                echo "✅ PASSED: Bust message is present."
-            elif echo "$line" | grep -iq "hit"; then
-                hand_value=$(echo "$line" | grep -oP '\d+')
-                decision=$(make_decision "$hand_value")
-                echo "Decision made: $decision"
-                
-                # Send decision to the game
-                echo "$decision" > /proc/"$game_pid"/fd/0
-                sleep 1  # Wait a second for the game to process the input
-            fi
-        done < output.txt
-    }
-
-    # Process the game output
-    process_game_output
-
-    echo "--------------------------------------------------"
-    echo "End of Program Output for this round"
-    echo "--------------------------------------------------"
+    echo "For $hits hits:"
+    echo "Blackjacks: $blackjacks"
+    echo "Wins: $wins"
+    echo "Busts: $busts"
 }
 
-# Run a round of blackjack
-play_blackjack
+# Test different scenarios
+for hits in {1..4}; do
+    play_blackjack $hits
+done
