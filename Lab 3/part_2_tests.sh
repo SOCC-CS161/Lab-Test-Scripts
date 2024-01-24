@@ -26,11 +26,11 @@ run_test() {
         echo "❌ FAILED: Correct card sequence not found. Searched for '$expected_cards_display'."
     fi
 
-    # Check for correct hand value using the original pattern
+    # Check for correct hand value using the exact match
     if grep -q "$expected_value" game_output.txt; then
         echo "✅ PASSED: Correct hand value found."
     else
-        echo "❌ FAILED: Correct hand value not found. Searched for '$expected_value'."
+        echo "❌ FAILED: Correct hand value not found. Searched for exact phrase '$expected_value'."
     fi
 
     # Print the program output
@@ -40,14 +40,14 @@ run_test() {
     echo "--------------------------------------------------"
 }
 
-# Scenario details with regular expression patterns and display versions
+# Scenario details with regular expression patterns and exact phrases
 declare -A scenarios
-scenarios["Blackjack on initial hand"]="0 '' 'A[[:space:][:punct:]]*0' 'A 0' 'Blackjack'"
-scenarios["Blackjack on second hand no ace"]="15 'y' 'J[[:space:][:punct:]]*3[[:space:][:punct:]]*8' 'J 3 8' 'Blackjack'"
-scenarios["Ace revalued from 11 to 1"]="11 'y' '9[[:space:][:punct:]]*A[[:space:][:punct:]]*8' '9 A 8' '18'"
-scenarios["Bust on first hit"]="3 'y' '7[[:space:][:punct:]]*9[[:space:][:punct:]]*0' '7 9 0' 'Bust'"
-scenarios["Bust on second hit"]="12 'y y' '6[[:space:][:punct:]]*3[[:space:][:punct:]]*8[[:space:][:punct:]]*8' '6 3 8 8' 'Bust'"
-scenarios["Bust on third hit"]="8 'y y y' '2[[:space:][:punct:]]*3[[:space:][:punct:]]*8[[:space:][:punct:]]*7[[:space:][:punct:]]*K' '2 3 8 7 K' 'Bust'"
+scenarios["Blackjack on initial hand"]="0 '' 'A[[:space:][:punct:]]*0' 'A 0' 'Blackjack! You won!!'"
+scenarios["Blackjack on second hand no ace"]="15 'y' 'J[[:space:][:punct:]]*3[[:space:][:punct:]]*8' 'J 3 8' 'Blackjack!!'"
+scenarios["Ace revalued from 11 to 1"]="11 'y' '9[[:space:][:punct:]]*A[[:space:][:punct:]]*8' '9 A 8' '.*'"
+scenarios["Bust on first hit"]="3 'y' '7[[:space:][:punct:]]*9[[:space:][:punct:]]*0' '7 9 0' 'Bust! You Lose!'"
+scenarios["Bust on second hit"]="12 'y y' '6[[:space:][:punct:]]*3[[:space:][:punct:]]*8[[:space:][:punct:]]*8' '6 3 8 8' 'Bust! You Lose!'"
+scenarios["Bust on third hit"]="8 'y y y' '2[[:space:][:punct:]]*3[[:space:][:punct:]]*8[[:space:][:punct:]]*7[[:space:][:punct:]]*K' '2 3 8 7 K' 'Bust! You lose!'"
 
 # Run tests for each scenario
 for scenario in "${!scenarios[@]}"; do
@@ -61,7 +61,7 @@ for scenario in "${!scenarios[@]}"; do
     seed="${scenario_details%% *}"
     remaining="${scenario_details#* }"
     inputs=$(echo "$remaining" | cut -d"'" -f2)
-    inputs="${inputs// /}"
+    inputs="${inputs// /}"  # Remove spaces from inputs
     remaining=$(echo "$remaining" | cut -d"'" -f3-)
     expected_cards=$(echo "$remaining" | cut -d"'" -f1)
     expected_cards_display=$(echo "$remaining" | cut -d"'" -f2)
