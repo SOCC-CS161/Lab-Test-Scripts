@@ -17,6 +17,7 @@ run_test() {
             sleep 1  # Add a delay of 1 second between inputs
         done
     } | ./blackjack_game > game_output.txt
+    cat game_output.txt
 
     # Check for correct card sequence
     if grep -q "$expected_cards" game_output.txt; then
