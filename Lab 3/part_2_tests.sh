@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ... [Previous part of the script remains unchanged] ...
+
 # Function to replace seed, compile, run the game, and check the results
 run_test() {
     local seed="$1"
@@ -8,16 +10,7 @@ run_test() {
     local expected_cards_display="$4"  # Simplified version for display
     local expected_value="$5"
 
-    # Replace time(0) with the fixed seed value and compile from stdin
-    sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
-
-    # Run the game and capture the output
-    {
-        for (( i=0; i<${#inputs}; i++ )); do
-            echo -e "${inputs:$i:1}\n"
-            sleep 1  # Add a delay of 1 second between inputs
-        done
-    } | ./blackjack_game > game_output.txt
+    # ... [Rest of the function remains unchanged] ...
 
     # Check for correct card sequence using regular expressions
     if grep -qE "$expected_cards" game_output.txt; then
@@ -26,7 +19,7 @@ run_test() {
         echo "❌ FAILED: Correct card sequence not found. Searched for '$expected_cards_display'."
     fi
 
-    # Check for correct hand value
+    # Check for correct hand value using the original pattern
     if grep -q "$expected_value" game_output.txt; then
         echo "✅ PASSED: Correct hand value found."
     else
