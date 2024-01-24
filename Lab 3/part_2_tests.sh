@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "-----------------------------------------------------------------------------------------"
+echo "++++++++++++++++++++++++++++++++++ PART 2 TESTS +++++++++++++++++++++++++++++++++++++++++"
+echo "-----------------------------------------------------------------------------------------"
+
  # Check if time(0) is present in the source code
     if ! grep -q "time(0)" ./source/main.cpp; then
         echo "❌ FAILED: 'time(0)' not found in source code. Ensure srand() is properly seeded."
