@@ -1,8 +1,10 @@
 
 #!/bin/bash
 
- # Enable case-insensitive string comparisons
-shopt -s nocasematch
+echo "-----------------------------------------------------------------------------------------"
+echo "++++++++++++++++++++++++++++++++++ PART 3 (FINAL) TESTS +++++++++++++++++++++++++++++++++"
+echo "-----------------------------------------------------------------------------------------"
+
  
  # Check if time(0) is present in the source code
     if ! grep -q "time(0)" ./source/main.cpp; then
