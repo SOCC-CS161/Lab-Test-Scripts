@@ -10,14 +10,17 @@ run_test() {
     # Replace time(0) with the fixed seed value and compile from stdin
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
-    # Run the game and capture the output
+    # Check the inputs and run the game
+    echo "Inputs: $inputs"  # Debug: print the inputs
+
     {
         for (( i=0; i<${#inputs}; i++ )); do
             echo -e "${inputs:$i:1}\n"
             sleep 1  # Add a delay of 1 second between inputs
         done
-
     } #| ./blackjack_game > game_output.txt
+
+    # Debug: print the game output file
     cat game_output.txt
 
     # Check for correct card sequence
