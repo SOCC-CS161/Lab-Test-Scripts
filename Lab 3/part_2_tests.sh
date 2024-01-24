@@ -9,7 +9,7 @@ run_test() {
 
 
     # Replace time(0) with the fixed seed value and compile from stdin
-    sed "s/time(0)/$seed/" ./main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
+    sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
 
     # Run the game, pass the input and capture the output
