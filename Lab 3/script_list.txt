@@ -1,1 +1,1 @@
-find_seeds_part_3.sh
+comps.sh
