@@ -17,7 +17,7 @@ play_blackjack() {
         echo -e "$input_sequence" | ./blackjack_game > output.txt
 
         # Tally outcomes
-        if grep -iq "blackjack" output.txt; then
+        if grep -iq "21" output.txt; then
             ((blackjack_count++))
         elif grep -iq "bust" output.txt; then
             ((bust_count++))
