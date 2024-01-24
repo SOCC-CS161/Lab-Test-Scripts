@@ -7,8 +7,12 @@ run_test() {
     local expected_cards=$3
     local expected_value=$4
 
-     # Replace time(0) with the fixed seed value and compile from stdin
-    sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
+     # Navigate to the directory containing main.cpp
+    cd /source || { echo "❌ FAILED to navigate to source directory"; exit 1; }
+
+    # Replace time(0) with the fixed seed value and compile from stdin
+    sed "s/time(0)/$seed/" main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
+
 
     # Run the game, pass the input and capture the output
     echo -e "$input" | ./blackjack_game > game_output.txt
