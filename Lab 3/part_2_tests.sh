@@ -3,7 +3,7 @@
 # Function to replace seed, compile, run the game, and check the results
 run_test() {
     local seed="$1"
-    local inputs="$2"  # Inputs as a single string
+    local inputs="$2"
     local expected_cards="$3"
     local expected_value="$4"
 
@@ -38,6 +38,7 @@ run_test() {
     cat game_output.txt
     echo "--------------------------------------------------"
 }
+
 
 # Scenario details
 declare -A scenarios
