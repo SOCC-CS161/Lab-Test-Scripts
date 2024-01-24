@@ -14,11 +14,10 @@ run_test() {
     {
         for (( i=0; i<${#inputs}; i++ )); do
             echo -e "${inputs:$i:1}\n"
-            echo "Loop iteration"
             sleep 1  # Add a delay of 1 second between inputs
         done
 
-    } | ./blackjack_game > game_output.txt
+    } #| ./blackjack_game > game_output.txt
     cat game_output.txt
 
     # Check for correct card sequence
