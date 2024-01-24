@@ -11,17 +11,14 @@ run_test() {
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
     # Check the inputs and run the game
-    echo "Inputs: $inputs"  # Debug: print the inputs
+    echo "Inputs: '$inputs'"  # Debug: print the inputs
 
     {
         for (( i=0; i<${#inputs}; i++ )); do
             echo -e "${inputs:$i:1}\n"
             sleep 1  # Add a delay of 1 second between inputs
         done
-    } #| ./blackjack_game > game_output.txt
-
-    # Debug: print the game output file
-    cat game_output.txt
+    } | ./blackjack_game > game_output.txt
 
     # Check for correct card sequence
     if grep -q "$expected_cards" game_output.txt; then
@@ -43,7 +40,6 @@ run_test() {
     cat game_output.txt
     echo "--------------------------------------------------"
 }
-
 
 # Scenario details
 declare -A scenarios
@@ -68,6 +64,7 @@ for scenario in "${!scenarios[@]}"; do
     
     # Extract inputs (split by spaces)
     inputs="${scenario_details%%\'*}"
+    inputs="${inputs// /}"  # Remove spaces from inputs
     scenario_details="${scenario_details#*\' }"
     
     # Extract expected cards
