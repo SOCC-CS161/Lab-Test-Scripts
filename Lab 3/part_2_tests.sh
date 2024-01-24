@@ -8,7 +8,9 @@ run_test() {
     local expected_value=$4
 
      # Navigate to the directory containing main.cpp
-    cd /source || { echo "❌ FAILED to navigate to source directory"; exit 1; }
+    echo "The current working directory is: $(pwd)"
+    cd ./source || { echo "❌ FAILED to navigate to source directory"; exit 1; }
+
 
     # Replace time(0) with the fixed seed value and compile from stdin
     sed "s/time(0)/$seed/" main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
