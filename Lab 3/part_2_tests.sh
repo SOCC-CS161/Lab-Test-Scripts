@@ -37,7 +37,7 @@ run_test() {
     # Print the program output
     echo "--------------------------------------------------"
     echo "Program Output:"
-    cat game_output.txt
+    cat -v game_output.txt
     echo "--------------------------------------------------"
 }
 
