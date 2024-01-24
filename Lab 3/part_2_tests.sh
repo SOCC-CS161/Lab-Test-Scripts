@@ -7,11 +7,10 @@ run_test() {
     local expected_cards=$3
     local expected_value=$4
 
-
     # Replace time(0) with the fixed seed value and compile from stdin
-    echo sed "s/time(0)/$seed/" ./source/main.cpp
+    echo "Source code after replacing time(0) with seed $seed:"
+    sed "s/time(0)/$seed/" ./source/main.cpp
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
-
 
     # Run the game, pass the input and capture the output
     echo -e "$input" | ./blackjack_game > game_output.txt
@@ -46,7 +45,6 @@ scenarios["Bust on first hit"]="0 'y\n' 'K J 0' 'Bust'"
 scenarios["Bust on second hit"]="1 'y\ny\n' '3 8 4 7' 'Bust'"
 scenarios["Bust on third hit"]="9 'y\ny\ny\n' '4 3 2 K 3' 'Bust'"
 
-
 # Run tests for each scenario
 for scenario in "${!scenarios[@]}"; do
     echo "=================================================="
@@ -55,4 +53,3 @@ for scenario in "${!scenarios[@]}"; do
     IFS=' ' read -ra ADDR <<< "${scenarios[$scenario]}"
     run_test "${ADDR[0]}" "${ADDR[1]}" "${ADDR[2]}" "${ADDR[3]}"
 done
-
