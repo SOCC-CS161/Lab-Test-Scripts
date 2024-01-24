@@ -35,8 +35,6 @@ run_test() {
     echo "--------------------------------------------------"
 }
 
-# Scenario details
-declare -A scenarios
 scenarios["Blackjack on initial hand"]="0 '' 'A 0' 'Blackjack'"
 scenarios["Blackjack on second hand no ace"]="15 'y\n' 'J 3 8' 'Blackjack'"
 scenarios["Ace revalued from 11 to 1"]="11 'y\n' '9 A 8' '.*'"
@@ -66,6 +64,7 @@ for scenario in "${!scenarios[@]}"; do
     
     # Extract expected value
     expected_value="${scenario_details%\'*}"
+    expected_value="${expected_value#\'}"
 
     run_test "$seed" "$input" "$expected_cards" "$expected_value"
 done
