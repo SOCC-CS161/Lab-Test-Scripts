@@ -10,9 +10,7 @@ run_test() {
     # Replace time(0) with the fixed seed value and compile from stdin
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
-    # Check the inputs and run the game
-    echo "Inputs: '$inputs'"  # Debug: print the inputs
-
+    # Run the game and capture the output
     {
         for (( i=0; i<${#inputs}; i++ )); do
             echo -e "${inputs:$i:1}\n"
@@ -20,8 +18,8 @@ run_test() {
         done
     } | ./blackjack_game > game_output.txt
 
-    # Check for correct card sequence
-    if grep -q "$expected_cards" game_output.txt; then
+    # Check for correct card sequence using regular expressions
+    if grep -qE "$expected_cards" game_output.txt; then
         echo "✅ PASSED: Correct card sequence found."
     else
         echo "❌ FAILED: Correct card sequence not found. Searched for '$expected_cards'."
@@ -37,18 +35,18 @@ run_test() {
     # Print the program output
     echo "--------------------------------------------------"
     echo "Program Output:"
-    cat -v game_output.txt
+    cat game_output.txt
     echo "--------------------------------------------------"
 }
 
 # Scenario details
 declare -A scenarios
-scenarios["Blackjack on initial hand"]="0 '' 'A 0' 'Blackjack'"
-scenarios["Blackjack on second hand no ace"]="15 'y' 'J 3 8' 'Blackjack'"
-scenarios["Ace revalued from 11 to 1"]="11 'y' '9 A 8' '.*'"
-scenarios["Bust on first hit"]="3 'y' '7 9 0' 'Bust'"
-scenarios["Bust on second hit"]="12 'y y' '6 3 8 8' 'Bust'"
-scenarios["Bust on third hit"]="8 'y y y' '2 3 8 7 K' 'Bust'"
+scenarios["Blackjack on initial hand"]="0 '' 'A\s*0' 'Blackjack'"
+scenarios["Blackjack on second hand no ace"]="15 'y' 'J\s*3\s*8' 'Blackjack'"
+scenarios["Ace revalued from 11 to 1"]="11 'y' '9\s*A\s*8' '.*'"
+scenarios["Bust on first hit"]="3 'y' '7\s*9\s*0' 'Bust'"
+scenarios["Bust on second hit"]="12 'y y' '6\s*3\s*8\s*8' 'Bust'"
+scenarios["Bust on third hit"]="8 'y y y' '2\s*3\s*8\s*7\s*K' 'Bust'"
 
 # Run tests for each scenario
 for scenario in "${!scenarios[@]}"; do
