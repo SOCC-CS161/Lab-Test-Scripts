@@ -36,12 +36,12 @@ run_test() {
 
 # Scenario details
 declare -A scenarios
-scenarios["Blackjack on initial hand"]="0 '' 'A 0' 'Blackjack'"
-scenarios["Blackjack on second hand no ace"]="15 'y\n' 'J 3 8' 'Blackjack'"
-scenarios["Ace revalued from 11 to 1"]="11 'y\n' '9 A 8' '.*'"
-scenarios["Bust on first hit"]="3 'y\n' '7 9 0' 'Bust'"
-scenarios["Bust on second hit"]="12 'y\ny\n' '6 3 8 8' 'Bust'"
-scenarios["Bust on third hit"]="8 'y\ny\ny\n' '2 3 8 7 K' 'Bust'"
+scenarios["Blackjack on initial hand"]="0 \"\" \"A 0\" \"Blackjack\""
+scenarios["Blackjack on second hand no ace"]="15 \"y\n\" \"J 3 8\" \"Blackjack\""
+scenarios["Ace revalued from 11 to 1"]="11 \"y\n\" \"9 A 8\" \".*\""
+scenarios["Bust on first hit"]="3 \"y\n\" \"7 9 0\" \"Bust\""
+scenarios["Bust on second hit"]="12 \"y\ny\n\" \"6 3 8 8\" \"Bust\""
+scenarios["Bust on third hit"]="8 \"y\ny\ny\n\" \"2 3 8 7 K\" \"Bust\""
 
 # Run tests for each scenario
 for scenario in "${!scenarios[@]}"; do
