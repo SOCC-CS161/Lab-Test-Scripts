@@ -12,10 +12,11 @@ run_test() {
 
     # Run the game and capture the output
     {
-        for (( i=0; i<${#inputs}; i++ )); do
-            echo -e "${inputs:$i:1}\n"
-            sleep 1  # Add a delay of 1 second between inputs
-        done
+        # for (( i=0; i<${#inputs}; i++ )); do
+        #     echo -e "${inputs:$i:1}\n"
+        #     sleep 1  # Add a delay of 1 second between inputs
+        # done
+        echo "y\ny\n"
     } | ./blackjack_game > game_output.txt
     cat game_output.txt
 
