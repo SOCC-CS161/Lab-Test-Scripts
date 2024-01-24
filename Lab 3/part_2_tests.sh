@@ -7,6 +7,12 @@ run_test() {
     local expected_cards="$3"
     local expected_value="$4"
 
+    # Check if time(0) is present in the source code
+    if ! grep -q "time(0)" ./source/main.cpp; then
+        echo "❌ FAILED: 'time(0)' not found in source code. Ensure srand() is properly seeded."
+        return 1  # Exit this function with an error status
+    fi
+    
     # Replace time(0) with the fixed seed value and compile from stdin
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
