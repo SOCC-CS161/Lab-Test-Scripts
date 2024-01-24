@@ -21,7 +21,7 @@ play_blackjack() {
             ((blackjack_count++))
         elif grep -iq "bust" output.txt; then
             ((bust_count++))
-        elif grep -iq "win" output.txt; then
+        elif grep -iq "won" output.txt; then
             ((win_count++))
         fi
     done
