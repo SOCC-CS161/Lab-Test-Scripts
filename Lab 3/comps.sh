@@ -3,7 +3,7 @@
 
 
 
-     g++ -o black_game ./source/main.cpp || { echo "Compilation failed";}
+     g++ -o blackjack_game ./source/main.cpp || { echo "Compilation failed";}
 
 
     # Run the game, pass the input and capture the output
