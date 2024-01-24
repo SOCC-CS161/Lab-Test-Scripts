@@ -52,10 +52,10 @@ run_test() {
 
 # Scenario details
 declare -A scenarios
-scenarios["Dealer Busts"]="2 '' '5\s*2' 'Dealer busts'"
-scenarios["Dealer Wins"]="3 '' '7\s*9' 'You Lose'"
-scenarios["Tie (Dealer Wins)"]="4 '' '8\s*J' 'You Lose'"
-scenarios["Dealer Loses"]="54 'y n' '0\s*4\s*5' 'You won'"
+scenarios["Dealer Busts"]="6 'n' '6\s*0' 'Dealer busts'"
+scenarios["Dealer Wins"]="3 'n' '7\s*9' 'You Lose'"
+scenarios["Tie (Dealer Wins)"]="4 'n' '8\s*J' 'You Lose'"
+scenarios["Dealer Loses"]="54 'y n' '0\s*4\s*5' 'You Win'"
 
 
 # Run tests for each scenario
