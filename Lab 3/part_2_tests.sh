@@ -62,18 +62,13 @@ for scenario in "${!scenarios[@]}"; do
     seed="${scenario_details%% *}"
     scenario_details="${scenario_details#* }"
     
-    # Extract inputs (split by spaces)
-    inputs="${scenario_details%%\'*}"
+    # Extract inputs
+    inputs=$(echo "$scenario_details" | cut -d"'" -f2)  # Get the input part
     inputs="${inputs// /}"  # Remove spaces from inputs
-    scenario_details="${scenario_details#*\' }"
     
-    # Extract expected cards
-    expected_cards="${scenario_details%%\'*}"
-    scenario_details="${scenario_details#*\' }"
-    
-    # Extract expected value and strip leading and trailing quotes
-    expected_value="${scenario_details%\'*}"
-    expected_value="${expected_value#\'}"
+    # Extract expected cards and values
+    expected_cards=$(echo "$scenario_details" | cut -d"'" -f4)
+    expected_value=$(echo "$scenario_details" | cut -d"'" -f6)
 
     run_test "$seed" "$inputs" "$expected_cards" "$expected_value"
 done
