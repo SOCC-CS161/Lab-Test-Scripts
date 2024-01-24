@@ -3,7 +3,7 @@
 # Function to replace seed, compile, run the game, and check the results
 run_test() {
     local seed="$1"
-    local inputs=($2) # Split inputs into an array
+    IFS=' ' read -ra inputs <<< "$2" # Read inputs into an array
     local expected_cards="$3"
     local expected_value="$4"
 
@@ -13,7 +13,7 @@ run_test() {
     # Run the game and capture the output
     {
         for input in "${inputs[@]}"; do
-            echo -e "$input\n"
+            echo -e "${input}\n" # Send each input followed by a newline
             sleep 1  # Add a delay of 1 second between inputs
         done
     } | ./blackjack_game > game_output.txt
