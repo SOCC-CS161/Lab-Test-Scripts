@@ -1,0 +1,13 @@
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+using namespace std;
+
+int main() {
+
+  for (int i=0; i < 20 < i++){
+    srand(i);
+    cout << "Seed " << i << ": " << rand()%9 + 17 << rand()%9 + 17 << rand()%9 + 17 << rand()%9 + 17 << rand()%9 + 17 << endl;
+  }
+return 0;
+}
