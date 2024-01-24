@@ -2,10 +2,10 @@
 
 # Function to replace seed, compile, run the game, and check the results
 run_test() {
-    local seed=$1
-    local input=$2
-    local expected_cards=$3
-    local expected_value=$4
+    local seed="$1"
+    local input="$2"
+    local expected_cards="$3"
+    local expected_value="$4"
 
     # Replace time(0) with the fixed seed value and compile from stdin
 
