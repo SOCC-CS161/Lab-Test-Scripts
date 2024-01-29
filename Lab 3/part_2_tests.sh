@@ -9,6 +9,14 @@ echo "--------------------------------------------------------------------------
         echo "❌ FAILED: 'time(0)' not found in source code. Ensure srand() is properly seeded."
         exit 1  # Exit this script with an error status
     fi
+
+    # Check if srand() is called more than once, excluding single-line comments
+    srand_count=$(grep -v "^\s*//" ./source/main.cpp | grep -c "srand("
+    if [ "$srand_count" -gt 1 ]; then
+        echo "❌ FAILED: srand() appears in code more than once. Ensure srand() appears only once in your code."
+        exit 1  # Exit this script with an error status
+    fi
+
     
 # Function to replace seed, compile, run the game, and check the results
 run_test() {
@@ -16,8 +24,8 @@ run_test() {
     local inputs="$2"
     local expected_cards="$3"
     local expected_value="$4"
+    local readable_expected_cards="${expected_cards//\\s*/ }"  # Convert regex to readable format
 
-      
     # Replace time(0) with the fixed seed value and compile from stdin
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
 
@@ -33,14 +41,14 @@ run_test() {
     if grep -qEi "$expected_cards" game_output.txt; then
         echo "✅ PASSED: Correct card sequence found."
     else
-        echo "❌ FAILED: Correct card sequence not found. Searched for '$expected_cards'."
+        echo "❌ FAILED: Correct card sequence not found. Searched for '$readable_expected_cards'."
     fi
 
     # Check for correct hand value
     if grep -qi "$expected_value" game_output.txt; then
         echo "✅ PASSED: Correct hand value found."
     else
-        echo "❌ FAILED: Correct hand value not found. Searched for '$expected_value'."
+        echo "❌ FAILED: Correct hand value not found. Expected '$expected_value'."
     fi
 
     # Print the program output
