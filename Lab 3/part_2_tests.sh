@@ -11,7 +11,7 @@ echo "--------------------------------------------------------------------------
     fi
 
     # Check if srand() is called more than once, excluding single-line comments
-    srand_count=$(grep -v "^\s*//" ./source/main.cpp | grep -c "srand("
+    srand_count=$(grep -v "^\s*//" ./source/main.cpp | grep -c "srand"
     if [ "$srand_count" -gt 1 ]; then
         echo "❌ FAILED: srand() appears in code more than once. Ensure srand() appears only once in your code."
         exit 1  # Exit this script with an error status
