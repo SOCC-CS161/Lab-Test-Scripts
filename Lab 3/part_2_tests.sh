@@ -24,7 +24,9 @@ run_test() {
     local inputs="$2"
     local expected_cards="$3"
     local expected_value="$4"
-    local readable_expected_cards="${expected_cards//\\s*/ }"  # Convert regex to readable format
+    
+    # Convert regex to readable format. Replace '\s*' with ' ' and remove escape characters
+    local readable_expected_cards=$(echo "$expected_cards" | sed 's/\\s\*/ /g')
 
     # Replace time(0) with the fixed seed value and compile from stdin
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
@@ -33,7 +35,6 @@ run_test() {
     {
         for (( i=0; i<${#inputs}; i++ )); do
             echo -e "${inputs:$i:1}\n"
-            #sleep 1  # Add a delay of 1 second between inputs
         done
     } | ./blackjack_game > game_output.txt
 
@@ -57,6 +58,7 @@ run_test() {
     cat game_output.txt
     echo "--------------------------------------------------"
 }
+
 
 # Scenario details
 declare -A scenarios
