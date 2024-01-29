@@ -47,11 +47,11 @@ run_test() {
         echo "❌ FAILED: Correct card sequence not found. Searched for '$readable_expected_cards'."
     fi
 
-    # Check for correct hand value
+    # Check for correct game outcome
     if grep -qi "$expected_value" game_output.txt; then
-        echo "✅ PASSED: Correct hand value found."
+        echo "✅ PASSED: Correct game outcome found."
     else
-        echo "❌ FAILED: Correct hand value not found. Expected '$expected_value'."
+        echo "❌ FAILED: Correct game outcome not found. Expected '$expected_value'."
     fi
 
     # Print the program output
