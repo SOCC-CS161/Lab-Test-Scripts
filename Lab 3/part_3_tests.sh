@@ -26,6 +26,8 @@ run_test() {
     local expected_cards="$3"
     local expected_value="$4"
 
+    # Convert regex to readable format. Replace '\s*' with ' ' and remove escape characters
+    local readable_expected_cards=$(echo "$expected_cards" | sed 's/\\s\*/ /g')
       
     # Replace time(0) with the fixed seed value and compile from stdin
     sed "s/time(0)/$seed/" ./source/main.cpp | g++ -x c++ - -o blackjack_game || { echo "❌ COMPILATION FAILED"; exit 1; }
@@ -42,14 +44,14 @@ run_test() {
     if grep -qEi "$expected_cards" game_output.txt; then
         echo "✅ PASSED: Correct card sequence found."
     else
-        echo "❌ FAILED: Correct card sequence not found. Searched for '$expected_cards'."
+        echo "❌ FAILED: Correct card sequence not found. Searched for '$readable_expected_cards'."
     fi
 
     # Check for correct hand value
     if grep -qi "$expected_value" game_output.txt; then
         echo "✅ PASSED: Correct hand value found."
     else
-        echo "❌ FAILED: Correct hand value not found. Searched for '$expected_value'."
+        echo "❌ FAILED: Correct hand value not found. Expected '$expected_value'."
     fi
 
     # Print the program output
@@ -58,6 +60,7 @@ run_test() {
     cat game_output.txt
     echo "--------------------------------------------------"
 }
+
 
 # Scenario details
 declare -A scenarios
