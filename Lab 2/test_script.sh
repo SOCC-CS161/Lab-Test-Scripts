@@ -114,7 +114,7 @@ echo "--------------------------------------------------"
 if grep -q "${expected_change}" output.txt; then
 echo "✅ PASSED: Correct total due found."
 else
-echo "❌ FAILED: Expected to find \"${expected_change}\" printed as total due."
+echo "❌ FAILED: Expected to find \"${expected_change}\" printed as change due."
 fi
 
 echo "--------------------------------------------------"
